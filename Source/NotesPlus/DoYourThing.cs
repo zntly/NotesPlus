@@ -18,13 +18,13 @@ namespace NotesPlus
 	[HarmonyPatch(typeof(GameSimulation), "HandleOnGameInfoChanged")]
 	public class DoYourThing
 	{
-		// Token: 0x06000008 RID: 8 RVA: 0x000020E5 File Offset: 0x000002E5
+		// Token: 0x06000008 RID: 8
 		public static BMG_InputField GetInput(int num)
 		{
 			return GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
 		}
 
-		// Token: 0x06000009 RID: 9 RVA: 0x000021B0 File Offset: 0x000003B0
+		// Token: 0x06000009 RID: 9
 		[HarmonyPostfix]
 		public static void Postfix(GameInfo gameInfo)
 		{
@@ -107,7 +107,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000A RID: 10 RVA: 0x0000250C File Offset: 0x0000070C
+		// Token: 0x0600000A RID: 10
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)
 		{
 			for (int i = 0; i < 15; i++)
@@ -126,13 +126,13 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000C RID: 12 RVA: 0x00002106 File Offset: 0x00000306
+		// Token: 0x0600000C RID: 12
 		public static void DoingTheThing1(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 0);
 		}
 
-		// Token: 0x0600000D RID: 13 RVA: 0x00002654 File Offset: 0x00000854
+		// Token: 0x0600000D RID: 13
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
 		{
 			string a = align.ToLower();
@@ -249,45 +249,62 @@ namespace NotesPlus
 				{
 					return new Tuple<Role, FactionType>(Role.TOWN_KILLING, FactionType.TOWN);
 				}
+				bool Pandora = Utils.IsPandora();
+				FactionType covfac = FactionType.COVEN;
+				if (Pandora)
+				{
+					covfac = (FactionType)43;
+				}
 				if (a == "cd")
 				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, FactionType.COVEN);
+					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, covfac);
 				}
 				if (a == "ck")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, FactionType.COVEN);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, covfac);
 				}
 				if (a == "cp" || a == "cpow" || a == "cpower")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, FactionType.COVEN);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, covfac);
 				}
 				if (a == "cu")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, FactionType.COVEN);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, covfac);
 				}
 				if (a == "rc" || a == "cov" || a == "coven")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, FactionType.COVEN);
+					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, covfac);
 				}
 				if (a == "cc")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_POWER, FactionType.COVEN);
+					return new Tuple<Role, FactionType>(Role.COVEN_POWER, covfac);
 				}
 				if (a == "ne")
 				{
 					return new Tuple<Role, FactionType>(Role.COMMON_COVEN, FactionType.NONE);
 				}
+				bool flag = Utils.IsCompliance();
+				FactionType nkfac = FactionType.NONE;
+				if (flag)
+				{
+					nkfac = (FactionType)44;
+				}
 				if (a == "nk")
 				{
-					return new Tuple<Role, FactionType>((Role)118, FactionType.NONE);
+					return new Tuple<Role, FactionType>((Role)118, nkfac);
 				}
 				if (a == "rn" || a == "neut" || a == "neutral")
 				{
 					return new Tuple<Role, FactionType>(Role.COMMON_TOWN, FactionType.NONE);
 				}
+				FactionType apocfac = FactionType.APOCALYPSE;
+				if (Pandora)
+				{
+					apocfac = (FactionType)43;
+				}
 				if (a == "na" || a == "ra" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")
 				{
-					return new Tuple<Role, FactionType>(Role.ANY, FactionType.APOCALYPSE);
+					return new Tuple<Role, FactionType>(Role.ANY, apocfac);
 				}
 				if (a == "cn")
 				{
@@ -305,85 +322,85 @@ namespace NotesPlus
 			return new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE);
 		}
 
-		// Token: 0x0600000E RID: 14 RVA: 0x0000210F File Offset: 0x0000030F
+		// Token: 0x0600000E RID: 14
 		public static void DoingTheThing2(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 1);
 		}
 
-		// Token: 0x0600000F RID: 15 RVA: 0x00002118 File Offset: 0x00000318
+		// Token: 0x0600000F RID: 15
 		public static void DoingTheThing15(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 14);
 		}
 
-		// Token: 0x06000010 RID: 16 RVA: 0x00002122 File Offset: 0x00000322
+		// Token: 0x06000010 RID: 16
 		public static void DoingTheThing14(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 13);
 		}
 
-		// Token: 0x06000011 RID: 17 RVA: 0x0000212C File Offset: 0x0000032C
+		// Token: 0x06000011 RID: 17
 		public static void DoingTheThing13(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 12);
 		}
 
-		// Token: 0x06000012 RID: 18 RVA: 0x00002136 File Offset: 0x00000336
+		// Token: 0x06000012 RID: 18
 		public static void DoingTheThing12(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 11);
 		}
 
-		// Token: 0x06000013 RID: 19 RVA: 0x00002140 File Offset: 0x00000340
+		// Token: 0x06000013 RID: 19
 		public static void DoingTheThing11(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 10);
 		}
 
-		// Token: 0x06000014 RID: 20 RVA: 0x0000214A File Offset: 0x0000034A
+		// Token: 0x06000014 RID: 20
 		public static void DoingTheThing10(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 9);
 		}
 
-		// Token: 0x06000015 RID: 21 RVA: 0x00002154 File Offset: 0x00000354
+		// Token: 0x06000015 RID: 21
 		public static void DoingTheThing9(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 8);
 		}
 
-		// Token: 0x06000016 RID: 22 RVA: 0x0000215D File Offset: 0x0000035D
+		// Token: 0x06000016 RID: 22
 		public static void DoingTheThing8(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 7);
 		}
 
-		// Token: 0x06000017 RID: 23 RVA: 0x00002166 File Offset: 0x00000366
+		// Token: 0x06000017 RID: 23
 		public static void DoingTheThing7(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 6);
 		}
 
-		// Token: 0x06000018 RID: 24 RVA: 0x0000216F File Offset: 0x0000036F
+		// Token: 0x06000018 RID: 24
 		public static void DoingTheThing6(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 5);
 		}
 
-		// Token: 0x06000019 RID: 25 RVA: 0x00002178 File Offset: 0x00000378
+		// Token: 0x06000019 RID: 25
 		public static void DoingTheThing5(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 4);
 		}
 
-		// Token: 0x0600001A RID: 26 RVA: 0x00002181 File Offset: 0x00000381
+		// Token: 0x0600001A RID: 26
 		public static void DoingTheThing4(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 3);
 		}
 
-		// Token: 0x0600001B RID: 27 RVA: 0x0000218A File Offset: 0x0000038A
+		// Token: 0x0600001B RID: 27
 		public static void DoingTheThing3(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 2);
