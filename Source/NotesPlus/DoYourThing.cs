@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BMG.UI;
@@ -389,7 +389,7 @@ namespace NotesPlus
 			DoYourThing.TheGoodStuff(str, 2);
 		}
 
-		// Token: 0x0600001C RID: 28 RVA: 0x00002B74 File Offset: 0x00000D74
+		// Token: 0x0600001C RID: 28
 		public static void TheGoodStuff(string str, int key)
 		{
 			bool flag;
@@ -429,6 +429,17 @@ namespace NotesPlus
 						else
 						{
 							factionType = role.GetFaction();
+						}
+						if (!match2.Success && Utils.IsBTOS2())
+						{
+							if ((factionType == FactionType.COVEN || factionType == FactionType.APOCALYPSE) && Utils.IsPandora())
+							{
+								factionType = (FactionType)43;
+							}
+							else if ((role == (Role)118 || factionType == FactionType.SERIALKILLER || factionType == FactionType.ARSONIST || factionType == FactionType.WEREWOLF || factionType == FactionType.SHROUD) && Utils.IsCompliance())
+							{
+								factionType = (FactionType)44;
+							}
 						}
 					}
 					bool flag3 = false;
