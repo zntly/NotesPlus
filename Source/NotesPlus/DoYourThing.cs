@@ -32,6 +32,7 @@ namespace NotesPlus
 		{
 			if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DAY)
 			{
+				DoYourThing.alreadydone = new List<int>();
 				for (int i = 1; i < 16; i++)
 				{
 					try
@@ -86,6 +87,7 @@ namespace NotesPlus
 							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing15));
 							break;
 						}
+						DoYourThing.alreadydone.Add(i);
 					}
 					catch
 					{
@@ -102,14 +104,82 @@ namespace NotesPlus
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
 				DoYourThing.notepad = UnityEngine.Object.FindAnyObjectByType<NotepadPanel>();
-				GameObject playernotepanel = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
-				if (DoYourThing.notepad && playernotepanel)
+				GameObject gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+				if (DoYourThing.notepad && gameObject)
 				{
 					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
-					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, playernotepanel.transform);
+					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
 					DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
 					DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
 					DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
+					return;
+				}
+			}
+			else if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DISCUSSION)
+			{
+				for (int j = 1; j < 16; j++)
+				{
+					try
+					{
+						if (!DoYourThing.alreadydone.Contains(j))
+						{
+							BMG_InputField input2 = DoYourThing.GetInput(j);
+							input2.characterLimit = 99999;
+							switch (j)
+							{
+							case 1:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing1));
+								break;
+							case 2:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing2));
+								break;
+							case 3:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing3));
+								break;
+							case 4:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing4));
+								break;
+							case 5:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing5));
+								break;
+							case 6:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing6));
+								break;
+							case 7:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing7));
+								break;
+							case 8:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing8));
+								break;
+							case 9:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing9));
+								break;
+							case 10:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing10));
+								break;
+							case 11:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing11));
+								break;
+							case 12:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing12));
+								break;
+							case 13:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing13));
+								break;
+							case 14:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing14));
+								break;
+							case 15:
+								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing15));
+								break;
+							}
+							DoYourThing.alreadydone.Add(j);
+						}
+					}
+					catch
+					{
+						j = 16;
+					}
 				}
 			}
 		}
@@ -543,42 +613,42 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600019B RID: 411
+		// Token: 0x0600001D RID: 29
 		public static void OnSendToChat()
 		{
-			string txt = "";
+			string text = "";
 			for (int i = 1; i < 16; i++)
 			{
 				try
 				{
-					BMG_InputField textbox = DoYourThing.GetInput(i);
-					if (textbox.gameObject.activeInHierarchy)
+					BMG_InputField input = DoYourThing.GetInput(i);
+					if (input.gameObject.activeInHierarchy)
 					{
-						string textboxtext = textbox.text;
-						MatchCollection regmatch = DoYourThing.LinkRoleRegex.Matches(textboxtext);
-						for (int matchcount = 0; matchcount < regmatch.Count; matchcount++)
+						string text2 = input.text;
+						MatchCollection matchCollection = DoYourThing.LinkRoleRegex.Matches(text2);
+						for (int j = 0; j < matchCollection.Count; j++)
 						{
-							string roleid = DoYourThing.RoleIdRegex.Match(regmatch[matchcount].Value).Value;
-							string factionid = "";
-							Match facmatch = DoYourThing.FactionIdRegex.Match(regmatch[matchcount].Value);
-							if (facmatch.Success && int.Parse(roleid) < 100)
+							string value = DoYourThing.RoleIdRegex.Match(matchCollection[j].Value).Value;
+							string text3 = "";
+							Match match = DoYourThing.FactionIdRegex.Match(matchCollection[j].Value);
+							if (match.Success && int.Parse(value) < 100)
 							{
-								factionid = facmatch.Value;
+								text3 = match.Value;
 							}
-							string fullthing = "[[#" + roleid.ToString();
-							if (factionid != "")
+							string text4 = "[[#" + value.ToString();
+							if (text3 != "")
 							{
-								fullthing = fullthing + "," + factionid.ToString();
+								text4 = text4 + "," + text3.ToString();
 							}
-							fullthing += "]]";
-							textboxtext = DoYourThing.PostChatRegex.Replace(textboxtext, fullthing, 1);
+							text4 += "]]";
+							text2 = DoYourThing.PostChatRegex.Replace(text2, text4, 1);
 						}
-						txt = string.Concat(new string[]
+						text = string.Concat(new string[]
 						{
-							txt,
+							text,
 							i.ToString(),
 							" ",
-							textboxtext,
+							text2,
 							" "
 						});
 					}
@@ -588,8 +658,8 @@ namespace NotesPlus
 					i = 16;
 				}
 			}
-			Debug.Log(txt);
-			PasteTextController.FormatAndPasteToChat(txt, DoYourThing.mentionsPanel);
+			Debug.Log(text);
+			PasteTextController.FormatAndPasteToChat(text, DoYourThing.mentionsPanel);
 		}
 
 		// Token: 0x04000002 RID: 2
@@ -613,19 +683,22 @@ namespace NotesPlus
 		// Token: 0x04000008 RID: 8
 		public static Dictionary<int, bool> lockedplayers;
 
-		// Token: 0x0400007A RID: 122
+		// Token: 0x04000009 RID: 9
 		public static BMG_Button PlayerNotesSendToChat;
 
-		// Token: 0x040000A3 RID: 163
+		// Token: 0x0400000A RID: 10
 		public static MentionPanel mentionsPanel;
 
-		// Token: 0x04000134 RID: 308
+		// Token: 0x0400000B RID: 11
 		public static NotepadPanel notepad;
 
-		// Token: 0x0400014F RID: 335
+		// Token: 0x0400000C RID: 12
 		public static Regex PostChatRegex;
 
-		// Token: 0x04000156 RID: 342
+		// Token: 0x0400000D RID: 13
 		public static Regex LinkRoleRegex = new Regex("<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
+
+		// Token: 0x04000017 RID: 23
+		public static List<int> alreadydone;
 	}
 }
