@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BMG.UI;
+using Game.Interface;
 using Game.Simulation;
 using HarmonyLib;
+using Mentions.UI;
 using Server.Shared.Extensions;
 using Server.Shared.Info;
 using Server.Shared.State;
@@ -28,7 +30,7 @@ namespace NotesPlus
 		[HarmonyPostfix]
 		public static void Postfix(GameInfo gameInfo)
 		{
-			if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DISCUSSION)
+			if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DAY)
 			{
 				for (int i = 1; i < 16; i++)
 				{
@@ -99,6 +101,16 @@ namespace NotesPlus
 				}
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
+				DoYourThing.notepad = UnityEngine.Object.FindAnyObjectByType<NotepadPanel>();
+				GameObject playernotepanel = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+				if (DoYourThing.notepad && playernotepanel)
+				{
+					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
+					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, playernotepanel.transform);
+					DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
+					DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
+					DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
+				}
 			}
 		}
 
@@ -119,6 +131,16 @@ namespace NotesPlus
 					DoYourThing.lockedplayers.SetValue(i, true);
 				}
 			}
+		}
+
+		// Token: 0x0600000B RID: 11
+		static DoYourThing()
+		{
+			DoYourThing.RoleIdRegex = new Regex("\\d+");
+			DoYourThing.FactionIdRegex = new Regex("(?<=,)\\d+");
+			DoYourThing.AlignmentRegex = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cc|cov|coven|rn|neut|neutral)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+			DoYourThing.AlignmentRegexBTOS = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cov|cc|coven|rn|neut|neutral|cn|np|ns|pariah)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|(.*?\\/style>)");
 		}
 
 		// Token: 0x0600000C RID: 12
@@ -521,6 +543,55 @@ namespace NotesPlus
 			}
 		}
 
+		// Token: 0x0600019B RID: 411
+		public static void OnSendToChat()
+		{
+			string txt = "";
+			for (int i = 1; i < 16; i++)
+			{
+				try
+				{
+					BMG_InputField textbox = DoYourThing.GetInput(i);
+					if (textbox.gameObject.activeInHierarchy)
+					{
+						string textboxtext = textbox.text;
+						MatchCollection regmatch = DoYourThing.LinkRoleRegex.Matches(textboxtext);
+						for (int matchcount = 0; matchcount < regmatch.Count; matchcount++)
+						{
+							string roleid = DoYourThing.RoleIdRegex.Match(regmatch[matchcount].Value).Value;
+							string factionid = "";
+							Match facmatch = DoYourThing.FactionIdRegex.Match(regmatch[matchcount].Value);
+							if (facmatch.Success && int.Parse(roleid) < 100)
+							{
+								factionid = facmatch.Value;
+							}
+							string fullthing = "[[#" + roleid.ToString();
+							if (factionid != "")
+							{
+								fullthing = fullthing + "," + factionid.ToString();
+							}
+							fullthing += "]]";
+							textboxtext = DoYourThing.PostChatRegex.Replace(textboxtext, fullthing, 1);
+						}
+						txt = string.Concat(new string[]
+						{
+							txt,
+							i.ToString(),
+							" ",
+							textboxtext,
+							" "
+						});
+					}
+				}
+				catch
+				{
+					i = 16;
+				}
+			}
+			Debug.Log(txt);
+			PasteTextController.FormatAndPasteToChat(txt, DoYourThing.mentionsPanel);
+		}
+
 		// Token: 0x04000002 RID: 2
 		public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
 
@@ -528,18 +599,33 @@ namespace NotesPlus
 		public static Regex RoleRegex = new Regex("\\[\\[#\\d+]]|\\[\\[#\\d+,\\d+]]|<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
 
 		// Token: 0x04000004 RID: 4
-		public static Regex RoleIdRegex = new Regex("\\d+");
+		public static Regex RoleIdRegex;
 
 		// Token: 0x04000005 RID: 5
-		public static Regex FactionIdRegex = new Regex("(?<=,)\\d+");
+		public static Regex FactionIdRegex;
 
 		// Token: 0x04000006 RID: 6
-		public static Regex AlignmentRegex = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cc|cov|coven|rn|neut|neutral)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+		public static Regex AlignmentRegex;
 
 		// Token: 0x04000007 RID: 7
-		public static Regex AlignmentRegexBTOS = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cov|cc|coven|rn|neut|neutral|cn|np|ns|pariah)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+		public static Regex AlignmentRegexBTOS;
 
 		// Token: 0x04000008 RID: 8
 		public static Dictionary<int, bool> lockedplayers;
+
+		// Token: 0x0400007A RID: 122
+		public static BMG_Button PlayerNotesSendToChat;
+
+		// Token: 0x040000A3 RID: 163
+		public static MentionPanel mentionsPanel;
+
+		// Token: 0x04000134 RID: 308
+		public static NotepadPanel notepad;
+
+		// Token: 0x0400014F RID: 335
+		public static Regex PostChatRegex;
+
+		// Token: 0x04000156 RID: 342
+		public static Regex LinkRoleRegex = new Regex("<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
 	}
 }
