@@ -97,11 +97,6 @@ namespace NotesPlus
 					DoYourThing.ourknown.Get().SetValue(keyValuePair.Key, keyValuePair.Value);
 					DoYourThing.lockedplayers.TryAdd(keyValuePair.Key, true);
 				}
-				for (int j = 0; j < 15; j++)
-				{
-					DoYourThing.ourknown.Get().TryAdd(j, new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE));
-					DoYourThing.lockedplayers.TryAdd(j, false);
-				}
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
 			}
@@ -114,14 +109,14 @@ namespace NotesPlus
 			{
 				try
 				{
-					if (Service.Game.Sim.simulation.knownRolesAndFactions.Data.ContainsKey(i) && (Service.Game.Sim.simulation.knownRolesAndFactions.Data[i].Item1 != DoYourThing.ourknown.Data[i].Item1 || Service.Game.Sim.simulation.knownRolesAndFactions.Data[i].Item2 != DoYourThing.ourknown.Data[i].Item2))
+					if ((!DoYourThing.ourknown.Get().ContainsKey(i) && Service.Game.Sim.simulation.knownRolesAndFactions.Get().ContainsKey(i)) || (Service.Game.Sim.simulation.knownRolesAndFactions.Get().ContainsKey(i) && DoYourThing.ourknown.Get().ContainsKey(i) && (Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item1 != DoYourThing.ourknown.Get().GetValue(i, null).Item1 || Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item2 != DoYourThing.ourknown.Get().GetValue(i, null).Item2)))
 					{
-						DoYourThing.lockedplayers[i] = true;
+						DoYourThing.lockedplayers.SetValue(i, true);
 					}
 				}
 				catch
 				{
-					DoYourThing.lockedplayers.TryAdd(i, true);
+					DoYourThing.lockedplayers.SetValue(i, true);
 				}
 			}
 		}
@@ -249,62 +244,62 @@ namespace NotesPlus
 				{
 					return new Tuple<Role, FactionType>(Role.TOWN_KILLING, FactionType.TOWN);
 				}
-				bool Pandora = Utils.IsPandora();
-				FactionType covfac = FactionType.COVEN;
-				if (Pandora)
+				bool flag = Utils.IsPandora();
+				FactionType item = FactionType.COVEN;
+				if (flag)
 				{
-					covfac = (FactionType)43;
+					item = (FactionType)43;
 				}
 				if (a == "cd")
 				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, covfac);
+					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, item);
 				}
 				if (a == "ck")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, covfac);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, item);
 				}
 				if (a == "cp" || a == "cpow" || a == "cpower")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, covfac);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, item);
 				}
 				if (a == "cu")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, covfac);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, item);
 				}
 				if (a == "rc" || a == "cov" || a == "coven")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, covfac);
+					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, item);
 				}
 				if (a == "cc")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_POWER, covfac);
+					return new Tuple<Role, FactionType>(Role.COVEN_POWER, item);
 				}
 				if (a == "ne")
 				{
 					return new Tuple<Role, FactionType>(Role.COMMON_COVEN, FactionType.NONE);
 				}
-				bool flag = Utils.IsCompliance();
-				FactionType nkfac = FactionType.NONE;
-				if (flag)
+				bool flag2 = Utils.IsCompliance();
+				FactionType item2 = FactionType.NONE;
+				if (flag2)
 				{
-					nkfac = (FactionType)44;
+					item2 = (FactionType)44;
 				}
 				if (a == "nk")
 				{
-					return new Tuple<Role, FactionType>((Role)118, nkfac);
+					return new Tuple<Role, FactionType>((Role)118, item2);
 				}
 				if (a == "rn" || a == "neut" || a == "neutral")
 				{
 					return new Tuple<Role, FactionType>(Role.COMMON_TOWN, FactionType.NONE);
 				}
-				FactionType apocfac = FactionType.APOCALYPSE;
-				if (Pandora)
+				FactionType item3 = FactionType.APOCALYPSE;
+				if (flag)
 				{
-					apocfac = (FactionType)43;
+					item3 = (FactionType)43;
 				}
 				if (a == "na" || a == "ra" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")
 				{
-					return new Tuple<Role, FactionType>(Role.ANY, apocfac);
+					return new Tuple<Role, FactionType>(Role.ANY, item3);
 				}
 				if (a == "cn")
 				{
@@ -507,48 +502,19 @@ namespace NotesPlus
 						}
 					}
 				}
-				if (!match.Success && !flag2)
+				if (!match.Success && !flag2 && Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
 				{
-					bool flag5 = false;
-					if (Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
-					{
-						flag5 = true;
-					}
-					if (!flag5)
-					{
-						DoYourThing.ourknown.Get().Remove(key);
-						Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
-						return;
-					}
-					DoYourThing.ourknown.Get().SetValue(key, new Tuple<Role, FactionType>(Role.UNKNOWN, FactionType.UNKNOWN));
-					Service.Game.Sim.simulation.knownRolesAndFactions.Get().SetValue(key, new Tuple<Role, FactionType>(Role.UNKNOWN, FactionType.UNKNOWN));
-					Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 					DoYourThing.ourknown.Get().Remove(key);
 					Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
 					Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 					return;
 				}
 			}
-			else if (!flag && ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus") && str.IndexOf('*') != -1)
+			else if (!flag && ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus") && str.IndexOf('*') != -1 && Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
 			{
-				bool flag6 = false;
-				if (Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
-				{
-					flag6 = true;
-				}
-				if (!flag6)
-				{
-					DoYourThing.ourknown.Get().Remove(key);
-					Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
-					return;
-				}
-				DoYourThing.ourknown.Get().SetValue(key, new Tuple<Role, FactionType>(Role.UNKNOWN, FactionType.UNKNOWN));
-				Service.Game.Sim.simulation.knownRolesAndFactions.Get().SetValue(key, new Tuple<Role, FactionType>(Role.UNKNOWN, FactionType.UNKNOWN));
-				Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 				DoYourThing.ourknown.Get().Remove(key);
 				Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
 				Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
-				return;
 			}
 		}
 
