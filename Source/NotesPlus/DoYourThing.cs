@@ -416,41 +416,44 @@ namespace NotesPlus
 					Role role = (Role)int.Parse(DoYourThing.RoleIdRegex.Match(value).Value);
 					Match match2 = DoYourThing.FactionIdRegex.Match(value);
 					FactionType factionType = FactionType.UNKNOWN;
-					if (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Always" || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Marked" && str.IndexOf('*') != -1) || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Roles" && role < Role.RANDOM_TOWN))
+					if (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Always" || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Marked" && str.IndexOf('*') != -1) || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Roles" && role < Role.RANDOM_TOWN) || ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only On Override")
 					{
 						if (match2.Success)
 						{
 							factionType = (FactionType)int.Parse(match2.Value);
 						}
-						else if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_TOWN && role <= Role.TOWN_POWER) || role == Role.COMMON_TOWN)) || (Utils.IsBTOS2() && role >= Role.TOWN_PROTECTIVE && role <= Role.COVEN_UTILITY))
+						if (!match2.Success && ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") != "Only On Override")
 						{
-							factionType = FactionType.TOWN;
-						}
-						else if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_COVEN && role <= Role.COVEN_POWER) || role == Role.COMMON_COVEN)) || (Utils.IsBTOS2() && role >= Role.COVEN_DECEPTION && role <= Role.NEUTRAL_APOCALYPSE))
-						{
-							factionType = FactionType.COVEN;
-						}
-						else if ((!Utils.IsBTOS2() && role >= Role.RANDOM_NEUTRAL && role <= Role.NEUTRAL_EVIL) || (Utils.IsBTOS2() && role >= Role.COMMON_TOWN && role <= (Role)121))
-						{
-							factionType = FactionType.NONE;
-						}
-						else if ((Utils.IsBTOS2() && role == Role.ANY) || (!Utils.IsBTOS2() && role == Role.NEUTRAL_APOCALYPSE))
-						{
-							factionType = FactionType.APOCALYPSE;
-						}
-						else
-						{
-							factionType = role.GetFaction();
-						}
-						if (!match2.Success && Utils.IsBTOS2())
-						{
-							if ((factionType == FactionType.COVEN || factionType == FactionType.APOCALYPSE) && Utils.IsPandora())
+							if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_TOWN && role <= Role.TOWN_POWER) || role == Role.COMMON_TOWN)) || (Utils.IsBTOS2() && role >= Role.TOWN_PROTECTIVE && role <= Role.COVEN_UTILITY))
 							{
-								factionType = (FactionType)43;
+								factionType = FactionType.TOWN;
 							}
-							else if ((role == (Role)118 || factionType == FactionType.SERIALKILLER || factionType == FactionType.ARSONIST || factionType == FactionType.WEREWOLF || factionType == FactionType.SHROUD) && Utils.IsCompliance())
+							else if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_COVEN && role <= Role.COVEN_POWER) || role == Role.COMMON_COVEN)) || (Utils.IsBTOS2() && role >= Role.COVEN_DECEPTION && role <= Role.NEUTRAL_APOCALYPSE))
 							{
-								factionType = (FactionType)44;
+								factionType = FactionType.COVEN;
+							}
+							else if ((!Utils.IsBTOS2() && role >= Role.RANDOM_NEUTRAL && role <= Role.NEUTRAL_EVIL) || (Utils.IsBTOS2() && role >= Role.COMMON_TOWN && role <= (Role)121))
+							{
+								factionType = FactionType.NONE;
+							}
+							else if ((Utils.IsBTOS2() && role == Role.ANY) || (!Utils.IsBTOS2() && role == Role.NEUTRAL_APOCALYPSE))
+							{
+								factionType = FactionType.APOCALYPSE;
+							}
+							else
+							{
+								factionType = role.GetFaction();
+							}
+							if (Utils.IsBTOS2())
+							{
+								if ((factionType == FactionType.COVEN || factionType == FactionType.APOCALYPSE) && Utils.IsPandora())
+								{
+									factionType = (FactionType)43;
+								}
+								else if ((role == (Role)118 || factionType == FactionType.SERIALKILLER || factionType == FactionType.ARSONIST || factionType == FactionType.WEREWOLF || factionType == FactionType.SHROUD) && Utils.IsCompliance())
+								{
+									factionType = (FactionType)44;
+								}
 							}
 						}
 					}
