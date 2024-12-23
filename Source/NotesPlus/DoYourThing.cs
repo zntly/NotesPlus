@@ -5,6 +5,7 @@ using BMG.UI;
 using Game.Interface;
 using Game.Simulation;
 using HarmonyLib;
+using Home.Common.Tooltips;
 using Mentions.UI;
 using Server.Shared.Extensions;
 using Server.Shared.Info;
@@ -109,6 +110,19 @@ namespace NotesPlus
 				{
 					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
 					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
+					DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
+					try
+					{
+						TooltipTrigger tooltip = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+						if (tooltip != null)
+						{
+							tooltip.LookupKey = "";
+							tooltip.NonLocalizedString = "Send Player Notes to Chat";
+						}
+					}
+					catch
+					{
+					}
 					DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
 					DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
 					DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
@@ -210,7 +224,7 @@ namespace NotesPlus
 			DoYourThing.FactionIdRegex = new Regex("(?<=,)\\d+");
 			DoYourThing.AlignmentRegex = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cc|cov|coven|rn|neut|neutral)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
 			DoYourThing.AlignmentRegexBTOS = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cov|cc|coven|rn|neut|neutral|cn|np|ns|pariah)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
-			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|(.*?\\/style>)");
+			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 		}
 
 		// Token: 0x0600000C RID: 12
@@ -599,16 +613,28 @@ namespace NotesPlus
 				}
 				if (!match.Success && !flag2 && Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
 				{
-					DoYourThing.ourknown.Get().Remove(key);
-					Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
-					Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
+					try
+					{
+						DoYourThing.ourknown.Get().Remove(key);
+						Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
+						Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
+					}
+					catch
+					{
+					}
 					return;
 				}
 			}
 			else if (!flag && ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus") && str.IndexOf('*') != -1 && Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
 			{
-				DoYourThing.ourknown.Get().Remove(key);
-				Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
+				try
+				{
+					DoYourThing.ourknown.Get().Remove(key);
+					Service.Game.Sim.simulation.knownRolesAndFactions.Get().Remove(key);
+				}
+				catch
+				{
+				}
 				Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 			}
 		}
@@ -698,7 +724,7 @@ namespace NotesPlus
 		// Token: 0x0400000D RID: 13
 		public static Regex LinkRoleRegex = new Regex("<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
 
-		// Token: 0x04000017 RID: 23
+		// Token: 0x0400000E RID: 14
 		public static List<int> alreadydone;
 	}
 }
