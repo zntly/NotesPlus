@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BMG.UI;
@@ -21,23 +21,25 @@ namespace NotesPlus
 	[HarmonyPatch(typeof(GameSimulation), "HandleOnGameInfoChanged")]
 	public class DoYourThing
 	{
-		// Token: 0x06000008 RID: 8 RVA: 0x0000226C File Offset: 0x0000046C
+		// Token: 0x06000008 RID: 8
 		public static BMG_InputField GetInput(int num)
 		{
 			if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
 			{
-				return GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num + 15).gameObject.GetComponentInChildren<BMG_InputField>();
+				return GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num + Service.Game.Sim.simulation.validPlayerCount.Get()).gameObject.GetComponentInChildren<BMG_InputField>();
 			}
 			return GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
 		}
 
-		// Token: 0x06000009 RID: 9 RVA: 0x000022D8 File Offset: 0x000004D8
+		// Token: 0x06000009 RID: 9
 		[HarmonyPostfix]
 		public static void Postfix(GameInfo gameInfo)
 		{
 			if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DAY)
 			{
+				DoYourThing.JANCanCode = false;
 				DoYourThing.alreadydone = new List<int>();
+				Debug.LogWarning(Service.Game.Sim.simulation.validPlayerCount.Get());
 				for (int i = 1; i < 16; i++)
 				{
 					try
@@ -120,6 +122,7 @@ namespace NotesPlus
 				}
 				if (DoYourThing.notepad && gameObject)
 				{
+					DoYourThing.JANCanCode = true;
 					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
 					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
 					DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
@@ -207,10 +210,37 @@ namespace NotesPlus
 						j = 16;
 					}
 				}
+				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills") && !DoYourThing.JANCanCode)
+				{
+					GameObject gameObject2 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+					if (DoYourThing.notepad && gameObject2)
+					{
+						DoYourThing.JANCanCode = true;
+						DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
+						DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject2.transform);
+						DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
+						try
+						{
+							TooltipTrigger component2 = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+							if (component2 != null)
+							{
+								component2.LookupKey = "";
+								component2.NonLocalizedString = "Send Player Notes to Chat";
+							}
+						}
+						catch
+						{
+						}
+						DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
+						DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
+						DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
+						return;
+					}
+				}
 			}
 		}
 
-		// Token: 0x0600000A RID: 10 RVA: 0x000029C8 File Offset: 0x00000BC8
+		// Token: 0x0600000A RID: 10
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)
 		{
 			for (int i = 0; i < 15; i++)
@@ -229,7 +259,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000B RID: 11 RVA: 0x00002B04 File Offset: 0x00000D04
+		// Token: 0x0600000B RID: 11
 		static DoYourThing()
 		{
 			DoYourThing.RoleIdRegex = new Regex("\\d+");
@@ -239,13 +269,13 @@ namespace NotesPlus
 			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 		}
 
-		// Token: 0x0600000C RID: 12 RVA: 0x000020A5 File Offset: 0x000002A5
+		// Token: 0x0600000C RID: 12
 		public static void DoingTheThing1(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 0);
 		}
 
-		// Token: 0x0600000D RID: 13 RVA: 0x00002B8C File Offset: 0x00000D8C
+		// Token: 0x0600000D RID: 13
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
 		{
 			string a = align.ToLower();
@@ -435,91 +465,91 @@ namespace NotesPlus
 			return new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE);
 		}
 
-		// Token: 0x0600000E RID: 14 RVA: 0x000020AE File Offset: 0x000002AE
+		// Token: 0x0600000E RID: 14
 		public static void DoingTheThing2(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 1);
 		}
 
-		// Token: 0x0600000F RID: 15 RVA: 0x000020B7 File Offset: 0x000002B7
+		// Token: 0x0600000F RID: 15
 		public static void DoingTheThing15(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 14);
 		}
 
-		// Token: 0x06000010 RID: 16 RVA: 0x000020C1 File Offset: 0x000002C1
+		// Token: 0x06000010 RID: 16
 		public static void DoingTheThing14(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 13);
 		}
 
-		// Token: 0x06000011 RID: 17 RVA: 0x000020CB File Offset: 0x000002CB
+		// Token: 0x06000011 RID: 17
 		public static void DoingTheThing13(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 12);
 		}
 
-		// Token: 0x06000012 RID: 18 RVA: 0x000020D5 File Offset: 0x000002D5
+		// Token: 0x06000012 RID: 18
 		public static void DoingTheThing12(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 11);
 		}
 
-		// Token: 0x06000013 RID: 19 RVA: 0x000020DF File Offset: 0x000002DF
+		// Token: 0x06000013 RID: 19
 		public static void DoingTheThing11(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 10);
 		}
 
-		// Token: 0x06000014 RID: 20 RVA: 0x000020E9 File Offset: 0x000002E9
+		// Token: 0x06000014 RID: 20
 		public static void DoingTheThing10(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 9);
 		}
 
-		// Token: 0x06000015 RID: 21 RVA: 0x000020F3 File Offset: 0x000002F3
+		// Token: 0x06000015 RID: 21
 		public static void DoingTheThing9(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 8);
 		}
 
-		// Token: 0x06000016 RID: 22 RVA: 0x000020FC File Offset: 0x000002FC
+		// Token: 0x06000016 RID: 22
 		public static void DoingTheThing8(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 7);
 		}
 
-		// Token: 0x06000017 RID: 23 RVA: 0x00002105 File Offset: 0x00000305
+		// Token: 0x06000017 RID: 23
 		public static void DoingTheThing7(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 6);
 		}
 
-		// Token: 0x06000018 RID: 24 RVA: 0x0000210E File Offset: 0x0000030E
+		// Token: 0x06000018 RID: 24
 		public static void DoingTheThing6(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 5);
 		}
 
-		// Token: 0x06000019 RID: 25 RVA: 0x00002117 File Offset: 0x00000317
+		// Token: 0x06000019 RID: 25
 		public static void DoingTheThing5(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 4);
 		}
 
-		// Token: 0x0600001A RID: 26 RVA: 0x00002120 File Offset: 0x00000320
+		// Token: 0x0600001A RID: 26
 		public static void DoingTheThing4(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 3);
 		}
 
-		// Token: 0x0600001B RID: 27 RVA: 0x00002129 File Offset: 0x00000329
+		// Token: 0x0600001B RID: 27
 		public static void DoingTheThing3(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 2);
 		}
 
-		// Token: 0x0600001C RID: 28 RVA: 0x000030D0 File Offset: 0x000012D0
+		// Token: 0x0600001C RID: 28
 		public static void TheGoodStuff(string str, int key)
 		{
 			bool flag;
@@ -677,7 +707,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600001D RID: 29 RVA: 0x00003744 File Offset: 0x00001944
+		// Token: 0x0600001D RID: 29
 		public static void OnSendToChat()
 		{
 			string text = "";
@@ -726,7 +756,7 @@ namespace NotesPlus
 			PasteTextController.FormatAndPasteToChat(text, DoYourThing.mentionsPanel);
 		}
 
-		// Token: 0x0600001E RID: 30 RVA: 0x000038C8 File Offset: 0x00001AC8
+		// Token: 0x0600001E RID: 30
 		public static FactionType TraitorFaction(string str)
 		{
 			string a = str.ToLower();
@@ -820,5 +850,8 @@ namespace NotesPlus
 
 		// Token: 0x0400000F RID: 15
 		public static Regex TraitorRegex = new Regex("(?<=^|\\s|\\*)(tt|traitor|ctt|covtt|coventt|att|apoctt|apocalypsett|ptt|pantt|pandtt|pandoratt|recruit|recruited|rec|recd|egotist|egoist|ego|egotown|egotownie|vamp|vampire|vampd|vampired|bit|bitten|converted|convert|conv)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+
+		// Token: 0x0400002C RID: 44
+		public static bool JANCanCode = false;
 	}
 }
