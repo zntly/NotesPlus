@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BMG.UI;
@@ -22,7 +22,7 @@ namespace NotesPlus
 	[HarmonyPatch(typeof(GameSimulation), "HandleOnGameInfoChanged")]
 	public class DoYourThing
 	{
-		// Token: 0x06000009 RID: 9
+		// Token: 0x0600000B RID: 11
 		public static BMG_InputField GetInput(int num)
 		{
 			if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
@@ -32,7 +32,7 @@ namespace NotesPlus
 			return GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
 		}
 
-		// Token: 0x0600000A RID: 10
+		// Token: 0x0600000C RID: 12
 		[HarmonyPostfix]
 		public static void Postfix(GameInfo gameInfo)
 		{
@@ -108,6 +108,19 @@ namespace NotesPlus
 				{
 					DoYourThing.ourknown.Get().SetValue(keyValuePair.Key, keyValuePair.Value);
 					DoYourThing.lockedplayers.TryAdd(keyValuePair.Key, keyValuePair.Value);
+					try
+					{
+						GameObject gameObjecta = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(keyValuePair.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						if (gameObjecta)
+						{
+							RectTransform component3 = gameObjecta.GetComponent<RectTransform>();
+							float width = Mathf.Min(gameObjecta.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+							component3.sizeDelta = new Vector2(width, 30f);
+						}
+					}
+					catch
+					{
+					}
 				}
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
@@ -242,7 +255,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000B RID: 11
+		// Token: 0x0600000D RID: 13
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)
 		{
 			for (int i = 0; i < 15; i++)
@@ -261,7 +274,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000C RID: 12
+		// Token: 0x0600000E RID: 14
 		static DoYourThing()
 		{
 			DoYourThing.JANCanCode = false;
@@ -272,14 +285,14 @@ namespace NotesPlus
 			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 		}
 
-		// Token: 0x0600000D RID: 13
+		// Token: 0x0600000F RID: 15
 		public static void DoingTheThing1(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 0);
 			DoYourThing.TheAdditionalStuff(str, 0);
 		}
 
-		// Token: 0x0600000E RID: 14
+		// Token: 0x06000010 RID: 16
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
 		{
 			string a = align.ToLower();
@@ -469,105 +482,105 @@ namespace NotesPlus
 			return new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE);
 		}
 
-		// Token: 0x0600000F RID: 15
+		// Token: 0x06000011 RID: 17
 		public static void DoingTheThing2(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 1);
 			DoYourThing.TheAdditionalStuff(str, 1);
 		}
 
-		// Token: 0x06000010 RID: 16
+		// Token: 0x06000012 RID: 18
 		public static void DoingTheThing15(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 14);
 			DoYourThing.TheAdditionalStuff(str, 14);
 		}
 
-		// Token: 0x06000011 RID: 17
+		// Token: 0x06000013 RID: 19
 		public static void DoingTheThing14(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 13);
 			DoYourThing.TheAdditionalStuff(str, 13);
 		}
 
-		// Token: 0x06000012 RID: 18
+		// Token: 0x06000014 RID: 20
 		public static void DoingTheThing13(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 12);
 			DoYourThing.TheAdditionalStuff(str, 12);
 		}
 
-		// Token: 0x06000013 RID: 19
+		// Token: 0x06000015 RID: 21
 		public static void DoingTheThing12(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 11);
 			DoYourThing.TheAdditionalStuff(str, 11);
 		}
 
-		// Token: 0x06000014 RID: 20
+		// Token: 0x06000016 RID: 22
 		public static void DoingTheThing11(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 10);
 			DoYourThing.TheAdditionalStuff(str, 10);
 		}
 
-		// Token: 0x06000015 RID: 21
+		// Token: 0x06000017 RID: 23
 		public static void DoingTheThing10(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 9);
 			DoYourThing.TheAdditionalStuff(str, 9);
 		}
 
-		// Token: 0x06000016 RID: 22
+		// Token: 0x06000018 RID: 24
 		public static void DoingTheThing9(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 8);
 			DoYourThing.TheAdditionalStuff(str, 8);
 		}
 
-		// Token: 0x06000017 RID: 23
+		// Token: 0x06000019 RID: 25
 		public static void DoingTheThing8(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 7);
 			DoYourThing.TheAdditionalStuff(str, 7);
 		}
 
-		// Token: 0x06000018 RID: 24
+		// Token: 0x0600001A RID: 26
 		public static void DoingTheThing7(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 6);
 			DoYourThing.TheAdditionalStuff(str, 6);
 		}
 
-		// Token: 0x06000019 RID: 25
+		// Token: 0x0600001B RID: 27
 		public static void DoingTheThing6(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 5);
 			DoYourThing.TheAdditionalStuff(str, 5);
 		}
 
-		// Token: 0x0600001A RID: 26
+		// Token: 0x0600001C RID: 28
 		public static void DoingTheThing5(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 4);
 			DoYourThing.TheAdditionalStuff(str, 4);
 		}
 
-		// Token: 0x0600001B RID: 27
+		// Token: 0x0600001D RID: 29
 		public static void DoingTheThing4(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 3);
 			DoYourThing.TheAdditionalStuff(str, 3);
 		}
 
-		// Token: 0x0600001C RID: 28
+		// Token: 0x0600001E RID: 30
 		public static void DoingTheThing3(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 2);
 			DoYourThing.TheAdditionalStuff(str, 2);
 		}
 
-		// Token: 0x0600001D RID: 29
+		// Token: 0x0600001F RID: 31
 		public static void TheGoodStuff(string str, int key)
 		{
 			Tuple<Role, FactionType> tuple;
@@ -646,6 +659,19 @@ namespace NotesPlus
 					if (flag3)
 					{
 						Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
+						try
+						{
+							GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+							if (gameObject)
+							{
+								RectTransform component = gameObject.GetComponent<RectTransform>();
+								float width = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+								component.sizeDelta = new Vector2(width, 30f);
+							}
+						}
+						catch
+						{
+						}
 						return;
 					}
 				}
@@ -700,6 +726,19 @@ namespace NotesPlus
 						if (flag5)
 						{
 							Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
+							try
+							{
+								GameObject gameObject2 = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+								if (gameObject2)
+								{
+									RectTransform component2 = gameObject2.GetComponent<RectTransform>();
+									float width2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+									component2.sizeDelta = new Vector2(width2, 30f);
+								}
+							}
+							catch
+							{
+							}
 							return;
 						}
 					}
@@ -757,6 +796,19 @@ namespace NotesPlus
 				if (flag7)
 				{
 					Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
+					try
+					{
+						GameObject gameObject3 = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						if (gameObject3)
+						{
+							RectTransform component3 = gameObject3.GetComponent<RectTransform>();
+							float width3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+							component3.sizeDelta = new Vector2(width3, 30f);
+						}
+					}
+					catch
+					{
+					}
 					return;
 				}
 			}
@@ -779,7 +831,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600001E RID: 30
+		// Token: 0x06000020 RID: 32
 		public static void OnSendToChat()
 		{
 			string text = "";
@@ -827,7 +879,7 @@ namespace NotesPlus
 			PasteTextController.FormatAndPasteToChat(text, DoYourThing.mentionsPanel);
 		}
 
-		// Token: 0x0600001F RID: 31
+		// Token: 0x06000021 RID: 33
 		public static FactionType TraitorFaction(string str)
 		{
 			string a = str.ToLower();
@@ -916,7 +968,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x06000020 RID: 32
+		// Token: 0x06000022 RID: 34
 		public static void DisableRoleLabel(int num)
 		{
 			try
@@ -928,54 +980,54 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600004A RID: 74
+		// Token: 0x06000023 RID: 35
 		public static GameObject GetNotesLabel(int num)
 		{
 			return GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("NotesPlusLabel").gameObject;
 		}
 
-		// Token: 0x0600006D RID: 109
+		// Token: 0x06000024 RID: 36
 		public static void CreateNotesLabel(int num)
 		{
-			GameObject rolelabel = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
-			if (rolelabel)
+			GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+			if (gameObject)
 			{
-				GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(rolelabel);
-				gameObject.name = "NotesPlusLabel";
-				TextMeshProUGUI component = gameObject.GetComponent<TextMeshProUGUI>();
-				UnityEngine.Object.Destroy(gameObject.GetComponent<RightClickable>());
+				GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject);
+				gameObject2.name = "NotesPlusLabel";
+				TextMeshProUGUI component = gameObject2.GetComponent<TextMeshProUGUI>();
+				UnityEngine.Object.Destroy(gameObject2.GetComponent<RightClickable>());
 				component.fontSizeMax = 18f;
 				component.fontSizeMin = 9f;
 				component.text = "()";
-				gameObject.SetActive(false);
-				gameObject.transform.SetParent(rolelabel.transform.parent);
-				gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
-				gameObject.transform.SetSiblingIndex(rolelabel.transform.GetSiblingIndex() + 1);
+				gameObject2.SetActive(false);
+				gameObject2.transform.SetParent(gameObject.transform.parent);
+				gameObject2.transform.localScale = new Vector3(1f, 1f, 1f);
+				gameObject2.transform.SetSiblingIndex(gameObject.transform.GetSiblingIndex() + 1);
 			}
 		}
 
-		// Token: 0x060000F0 RID: 240
+		// Token: 0x06000025 RID: 37
 		public static void TheAdditionalStuff(string str, int key)
 		{
 			if (ModSettings.GetBool("Additional Notes"))
 			{
 				Match match = DoYourThing.AdditionalNotesRegex.Match(str);
-				GameObject noteslabel = DoYourThing.GetNotesLabel(key);
+				GameObject notesLabel = DoYourThing.GetNotesLabel(key);
 				if (match.Success)
 				{
-					string hexcode = ColorUtility.ToHtmlStringRGB(ModSettings.GetColor("Additional Notes Color"));
-					noteslabel.GetComponent<TextMeshProUGUI>().text = string.Concat(new string[]
+					string text = ColorUtility.ToHtmlStringRGB(ModSettings.GetColor("Additional Notes Color"));
+					notesLabel.GetComponent<TextMeshProUGUI>().text = string.Concat(new string[]
 					{
 						"<color=#",
-						hexcode,
+						text,
 						">(",
 						match.Value,
 						")</color>"
 					});
 				}
-				if (noteslabel.active != match.Success)
+				if (notesLabel.activeSelf != match.Success)
 				{
-					noteslabel.SetActive(match.Success);
+					notesLabel.SetActive(match.Success);
 				}
 			}
 		}
@@ -1025,7 +1077,7 @@ namespace NotesPlus
 		// Token: 0x04000010 RID: 16
 		public static Dictionary<int, Tuple<Role, FactionType>> lockedplayers;
 
-		// Token: 0x0400007E RID: 126
+		// Token: 0x04000011 RID: 17
 		public static Regex AdditionalNotesRegex = new Regex("(?<=(?<!\\[)\\[)[^\\[\\]]*(?=\\](?!\\]))");
 	}
 }
