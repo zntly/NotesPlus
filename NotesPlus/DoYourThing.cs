@@ -94,7 +94,7 @@ namespace NotesPlus
 							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing15));
 							break;
 						}
-						DoYourThing.CreateNotesLabel(i);
+						DoYourThing.CreateNotesLabel(i - 1);
 						DoYourThing.alreadydone.Add(i);
 					}
 					catch
@@ -203,7 +203,7 @@ namespace NotesPlus
 								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing15));
 								break;
 							}
-							DoYourThing.CreateNotesLabel(j);
+							DoYourThing.CreateNotesLabel(j - 1);
 							DoYourThing.alreadydone.Add(j);
 						}
 					}
