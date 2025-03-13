@@ -110,12 +110,12 @@ namespace NotesPlus
 					DoYourThing.lockedplayers.TryAdd(keyValuePair.Key, keyValuePair.Value);
 					try
 					{
-						GameObject gameObjecta = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(keyValuePair.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
-						if (gameObjecta)
+						GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(keyValuePair.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						if (gameObject)
 						{
-							RectTransform component3 = gameObjecta.GetComponent<RectTransform>();
-							float width = Mathf.Min(gameObjecta.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
-							component3.sizeDelta = new Vector2(width, 30f);
+							RectTransform component4 = gameObject.GetComponent<RectTransform>();
+							float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+							component4.sizeDelta = new Vector2(x, 30f);
 						}
 					}
 					catch
@@ -125,28 +125,28 @@ namespace NotesPlus
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
 				DoYourThing.notepad = UnityEngine.Object.FindAnyObjectByType<NotepadPanel>();
-				GameObject gameObject;
+				GameObject gameObject2;
 				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
 				{
-					gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+					gameObject2 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
 				}
 				else
 				{
-					gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+					gameObject2 = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
 				}
-				if (DoYourThing.notepad && gameObject)
+				if (DoYourThing.notepad && gameObject2)
 				{
 					DoYourThing.JANCanCode = true;
 					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
-					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
+					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject2.transform);
 					DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
 					try
 					{
-						TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
-						if (component != null)
+						TooltipTrigger component2 = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+						if (component2 != null)
 						{
-							component.LookupKey = "";
-							component.NonLocalizedString = "Send Player Notes to Chat";
+							component2.LookupKey = "";
+							component2.NonLocalizedString = "Send Player Notes to Chat";
 						}
 					}
 					catch
@@ -227,20 +227,20 @@ namespace NotesPlus
 				}
 				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills") && !DoYourThing.JANCanCode)
 				{
-					GameObject gameObject2 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
-					if (DoYourThing.notepad && gameObject2)
+					GameObject gameObject3 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+					if (DoYourThing.notepad && gameObject3)
 					{
 						DoYourThing.JANCanCode = true;
 						DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
-						DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject2.transform);
+						DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject3.transform);
 						DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
 						try
 						{
-							TooltipTrigger component2 = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
-							if (component2 != null)
+							TooltipTrigger component3 = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+							if (component3 != null)
 							{
-								component2.LookupKey = "";
-								component2.NonLocalizedString = "Send Player Notes to Chat";
+								component3.LookupKey = "";
+								component3.NonLocalizedString = "Send Player Notes to Chat";
 							}
 						}
 						catch
@@ -265,6 +265,19 @@ namespace NotesPlus
 					if ((!DoYourThing.ourknown.Get().ContainsKey(i) && Service.Game.Sim.simulation.knownRolesAndFactions.Get().ContainsKey(i)) || (Service.Game.Sim.simulation.knownRolesAndFactions.Get().ContainsKey(i) && DoYourThing.ourknown.Get().ContainsKey(i) && (Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item1 != DoYourThing.ourknown.Get().GetValue(i, null).Item1 || Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item2 != DoYourThing.ourknown.Get().GetValue(i, null).Item2)))
 					{
 						DoYourThing.lockedplayers.SetValue(i, Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null));
+						try
+						{
+							GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+							if (gameObject)
+							{
+								RectTransform component = gameObject.GetComponent<RectTransform>();
+								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+								component.sizeDelta = new Vector2(x, 30f);
+							}
+						}
+						catch
+						{
+						}
 					}
 				}
 				catch
@@ -665,8 +678,8 @@ namespace NotesPlus
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
-								float width = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
-								component.sizeDelta = new Vector2(width, 30f);
+								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+								component.sizeDelta = new Vector2(x, 30f);
 							}
 						}
 						catch
@@ -732,8 +745,8 @@ namespace NotesPlus
 								if (gameObject2)
 								{
 									RectTransform component2 = gameObject2.GetComponent<RectTransform>();
-									float width2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
-									component2.sizeDelta = new Vector2(width2, 30f);
+									float x2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+									component2.sizeDelta = new Vector2(x2, 30f);
 								}
 							}
 							catch
@@ -802,8 +815,8 @@ namespace NotesPlus
 						if (gameObject3)
 						{
 							RectTransform component3 = gameObject3.GetComponent<RectTransform>();
-							float width3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
-							component3.sizeDelta = new Vector2(width3, 30f);
+							float x3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+							component3.sizeDelta = new Vector2(x3, 30f);
 						}
 					}
 					catch
