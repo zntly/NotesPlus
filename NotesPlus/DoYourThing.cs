@@ -950,6 +950,7 @@ namespace NotesPlus
 				gameObject.SetActive(false);
 				gameObject.transform.SetParent(rolelabel.transform.parent);
 				gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
+				gameObject.transform.SetSiblingIndex(rolelabel.transform.GetSiblingIndex() + 1);
 			}
 		}
 
