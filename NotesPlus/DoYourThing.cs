@@ -6,6 +6,7 @@ using Game.Interface;
 using Game.Simulation;
 using HarmonyLib;
 using Home.Common.Tooltips;
+using Home.Shared;
 using Mentions.UI;
 using Server.Shared.Extensions;
 using Server.Shared.Info;
@@ -22,7 +23,7 @@ namespace NotesPlus
 	[HarmonyPatch(typeof(GameSimulation), "HandleOnGameInfoChanged")]
 	public class DoYourThing
 	{
-		// Token: 0x0600000B RID: 11
+		// Token: 0x0600000B RID: 11 RVA: 0x00002448 File Offset: 0x00000648
 		public static BMG_InputField GetInput(int num)
 		{
 			if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
@@ -32,7 +33,7 @@ namespace NotesPlus
 			return GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
 		}
 
-		// Token: 0x0600000C RID: 12
+		// Token: 0x0600000C RID: 12 RVA: 0x000024CC File Offset: 0x000006CC
 		[HarmonyPostfix]
 		public static void Postfix(GameInfo gameInfo)
 		{
@@ -108,45 +109,32 @@ namespace NotesPlus
 				{
 					DoYourThing.ourknown.Get().SetValue(keyValuePair.Key, keyValuePair.Value);
 					DoYourThing.lockedplayers.TryAdd(keyValuePair.Key, keyValuePair.Value);
-					try
-					{
-						GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(keyValuePair.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
-						if (gameObject)
-						{
-							RectTransform component4 = gameObject.GetComponent<RectTransform>();
-							float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
-							component4.sizeDelta = new Vector2(x, 30f);
-						}
-					}
-					catch
-					{
-					}
 				}
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
 				DoYourThing.notepad = UnityEngine.Object.FindAnyObjectByType<NotepadPanel>();
-				GameObject gameObject2;
+				GameObject gameObject;
 				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
 				{
-					gameObject2 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+					gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
 				}
 				else
 				{
-					gameObject2 = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+					gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
 				}
-				if (DoYourThing.notepad && gameObject2)
+				if (DoYourThing.notepad && gameObject)
 				{
 					DoYourThing.JANCanCode = true;
 					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
-					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject2.transform);
+					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
 					DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
 					try
 					{
-						TooltipTrigger component2 = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
-						if (component2 != null)
+						TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+						if (component != null)
 						{
-							component2.LookupKey = "";
-							component2.NonLocalizedString = "Send Player Notes to Chat";
+							component.LookupKey = "";
+							component.NonLocalizedString = "Send Player Notes to Chat";
 						}
 					}
 					catch
@@ -225,6 +213,22 @@ namespace NotesPlus
 						j = 16;
 					}
 				}
+				foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair2 in DoYourThing.lockedplayers)
+				{
+					try
+					{
+						GameObject gameObject2 = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(keyValuePair2.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						if (gameObject2)
+						{
+							RectTransform component2 = gameObject2.GetComponent<RectTransform>();
+							float x = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + keyValuePair2.Value.Item1.ToDisplayString() + ")").x * 0.34718204f, 150f);
+							component2.sizeDelta = new Vector2(x, 30f);
+						}
+					}
+					catch
+					{
+					}
+				}
 				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills") && !DoYourThing.JANCanCode)
 				{
 					GameObject gameObject3 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
@@ -255,7 +259,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000D RID: 13
+		// Token: 0x0600000D RID: 13 RVA: 0x00002E2C File Offset: 0x0000102C
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)
 		{
 			for (int i = 0; i < 15; i++)
@@ -271,7 +275,7 @@ namespace NotesPlus
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
-								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item1.ToDisplayString() + ")").x * 0.34718204f, 150f);
 								component.sizeDelta = new Vector2(x, 30f);
 							}
 						}
@@ -287,7 +291,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000E RID: 14
+		// Token: 0x0600000E RID: 14 RVA: 0x00003064 File Offset: 0x00001264
 		static DoYourThing()
 		{
 			DoYourThing.JANCanCode = false;
@@ -298,14 +302,14 @@ namespace NotesPlus
 			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 		}
 
-		// Token: 0x0600000F RID: 15
+		// Token: 0x0600000F RID: 15 RVA: 0x0000213C File Offset: 0x0000033C
 		public static void DoingTheThing1(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 0);
 			DoYourThing.TheAdditionalStuff(str, 0);
 		}
 
-		// Token: 0x06000010 RID: 16
+		// Token: 0x06000010 RID: 16 RVA: 0x00003104 File Offset: 0x00001304
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
 		{
 			string a = align.ToLower();
@@ -495,105 +499,105 @@ namespace NotesPlus
 			return new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE);
 		}
 
-		// Token: 0x06000011 RID: 17
+		// Token: 0x06000011 RID: 17 RVA: 0x0000214C File Offset: 0x0000034C
 		public static void DoingTheThing2(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 1);
 			DoYourThing.TheAdditionalStuff(str, 1);
 		}
 
-		// Token: 0x06000012 RID: 18
+		// Token: 0x06000012 RID: 18 RVA: 0x0000215C File Offset: 0x0000035C
 		public static void DoingTheThing15(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 14);
 			DoYourThing.TheAdditionalStuff(str, 14);
 		}
 
-		// Token: 0x06000013 RID: 19
+		// Token: 0x06000013 RID: 19 RVA: 0x0000216E File Offset: 0x0000036E
 		public static void DoingTheThing14(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 13);
 			DoYourThing.TheAdditionalStuff(str, 13);
 		}
 
-		// Token: 0x06000014 RID: 20
+		// Token: 0x06000014 RID: 20 RVA: 0x00002180 File Offset: 0x00000380
 		public static void DoingTheThing13(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 12);
 			DoYourThing.TheAdditionalStuff(str, 12);
 		}
 
-		// Token: 0x06000015 RID: 21
+		// Token: 0x06000015 RID: 21 RVA: 0x00002192 File Offset: 0x00000392
 		public static void DoingTheThing12(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 11);
 			DoYourThing.TheAdditionalStuff(str, 11);
 		}
 
-		// Token: 0x06000016 RID: 22
+		// Token: 0x06000016 RID: 22 RVA: 0x000021A4 File Offset: 0x000003A4
 		public static void DoingTheThing11(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 10);
 			DoYourThing.TheAdditionalStuff(str, 10);
 		}
 
-		// Token: 0x06000017 RID: 23
+		// Token: 0x06000017 RID: 23 RVA: 0x000021B6 File Offset: 0x000003B6
 		public static void DoingTheThing10(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 9);
 			DoYourThing.TheAdditionalStuff(str, 9);
 		}
 
-		// Token: 0x06000018 RID: 24
+		// Token: 0x06000018 RID: 24 RVA: 0x000021C8 File Offset: 0x000003C8
 		public static void DoingTheThing9(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 8);
 			DoYourThing.TheAdditionalStuff(str, 8);
 		}
 
-		// Token: 0x06000019 RID: 25
+		// Token: 0x06000019 RID: 25 RVA: 0x000021D8 File Offset: 0x000003D8
 		public static void DoingTheThing8(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 7);
 			DoYourThing.TheAdditionalStuff(str, 7);
 		}
 
-		// Token: 0x0600001A RID: 26
+		// Token: 0x0600001A RID: 26 RVA: 0x000021E8 File Offset: 0x000003E8
 		public static void DoingTheThing7(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 6);
 			DoYourThing.TheAdditionalStuff(str, 6);
 		}
 
-		// Token: 0x0600001B RID: 27
+		// Token: 0x0600001B RID: 27 RVA: 0x000021F8 File Offset: 0x000003F8
 		public static void DoingTheThing6(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 5);
 			DoYourThing.TheAdditionalStuff(str, 5);
 		}
 
-		// Token: 0x0600001C RID: 28
+		// Token: 0x0600001C RID: 28 RVA: 0x00002208 File Offset: 0x00000408
 		public static void DoingTheThing5(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 4);
 			DoYourThing.TheAdditionalStuff(str, 4);
 		}
 
-		// Token: 0x0600001D RID: 29
+		// Token: 0x0600001D RID: 29 RVA: 0x00002218 File Offset: 0x00000418
 		public static void DoingTheThing4(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 3);
 			DoYourThing.TheAdditionalStuff(str, 3);
 		}
 
-		// Token: 0x0600001E RID: 30
+		// Token: 0x0600001E RID: 30 RVA: 0x00002228 File Offset: 0x00000428
 		public static void DoingTheThing3(string str)
 		{
 			DoYourThing.TheGoodStuff(str, 2);
 			DoYourThing.TheAdditionalStuff(str, 2);
 		}
 
-		// Token: 0x0600001F RID: 31
+		// Token: 0x0600001F RID: 31 RVA: 0x00003648 File Offset: 0x00001848
 		public static void TheGoodStuff(string str, int key)
 		{
 			Tuple<Role, FactionType> tuple;
@@ -678,7 +682,7 @@ namespace NotesPlus
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
-								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + role.ToDisplayString() + ")").x * 0.34718204f, 150f);
 								component.sizeDelta = new Vector2(x, 30f);
 							}
 						}
@@ -745,7 +749,7 @@ namespace NotesPlus
 								if (gameObject2)
 								{
 									RectTransform component2 = gameObject2.GetComponent<RectTransform>();
-									float x2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+									float x2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + item.ToDisplayString() + ")").x * 0.34718204f, 150f);
 									component2.sizeDelta = new Vector2(x2, 30f);
 								}
 							}
@@ -815,7 +819,7 @@ namespace NotesPlus
 						if (gameObject3)
 						{
 							RectTransform component3 = gameObject3.GetComponent<RectTransform>();
-							float x3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues().x * 0.34718204f, 150f);
+							float x3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + item2.ToDisplayString() + ")").x * 0.34718204f, 150f);
 							component3.sizeDelta = new Vector2(x3, 30f);
 						}
 					}
@@ -844,7 +848,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x06000020 RID: 32
+		// Token: 0x06000020 RID: 32 RVA: 0x000040E4 File Offset: 0x000022E4
 		public static void OnSendToChat()
 		{
 			string text = "";
@@ -892,7 +896,7 @@ namespace NotesPlus
 			PasteTextController.FormatAndPasteToChat(text, DoYourThing.mentionsPanel);
 		}
 
-		// Token: 0x06000021 RID: 33
+		// Token: 0x06000021 RID: 33 RVA: 0x00004260 File Offset: 0x00002460
 		public static FactionType TraitorFaction(string str)
 		{
 			string a = str.ToLower();
@@ -981,7 +985,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x06000022 RID: 34
+		// Token: 0x06000022 RID: 34 RVA: 0x000045A8 File Offset: 0x000027A8
 		public static void DisableRoleLabel(int num)
 		{
 			try
@@ -993,13 +997,13 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x06000023 RID: 35
+		// Token: 0x06000023 RID: 35 RVA: 0x00002238 File Offset: 0x00000438
 		public static GameObject GetNotesLabel(int num)
 		{
 			return GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("NotesPlusLabel").gameObject;
 		}
 
-		// Token: 0x06000024 RID: 36
+		// Token: 0x06000024 RID: 36 RVA: 0x00004600 File Offset: 0x00002800
 		public static void CreateNotesLabel(int num)
 		{
 			GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
@@ -1019,7 +1023,7 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x06000025 RID: 37
+		// Token: 0x06000025 RID: 37 RVA: 0x000046E0 File Offset: 0x000028E0
 		public static void TheAdditionalStuff(string str, int key)
 		{
 			if (ModSettings.GetBool("Additional Notes"))
