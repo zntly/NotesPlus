@@ -65,9 +65,9 @@ namespace NotesPlus
 		// Token: 0x0600003F RID: 63
 		public static string MRCString(Role role, FactionType factionType)
 		{
-			if (Main.FactionSpecificRoleNames)
+			if (MiscRoleCustomisation.Main.FactionSpecificRoleNames)
 			{
-				return Utils.ToRoleFactionDisplayString(role, factionType);
+				return MiscRoleCustomisation.Utils.ToRoleFactionDisplayString(role, factionType);
 			}
 			return role.ToDisplayString();
 		}

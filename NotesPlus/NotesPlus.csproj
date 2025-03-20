@@ -33,32 +33,35 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\BepInEx\core\0Harmony.dll</HintPath>
-    </Reference>
+  <PackageReference Include="HarmonyX" Version="2.10.1" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.10" IncludeAssets="compile" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\TownOfSalem2_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>lib\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BetterTOS2">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\SalemModLoader\Mods\BetterTOS2.dll</HintPath>
+      <HintPath>lib\BetterTOS2.dll</HintPath>
+    </Reference>
+	<Reference Include="MiscRoleCustomisation">
+      <HintPath>lib\MiscRoleCustomisation.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\TownOfSalem2_Data\Managed\netstandard.dll</HintPath>
+      <HintPath>lib\netstandard.dll</HintPath>
     </Reference>
     <Reference Include="SalemModLoader">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\BepInEx\plugins\SalemModLoader.dll</HintPath>
+      <HintPath>lib\SalemModLoader.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\TownOfSalem2_Data\Managed\System.dll</HintPath>
+      <HintPath>lib\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\TownOfSalem2_Data\Managed\System.Core.dll</HintPath>
+      <HintPath>lib\System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\TownOfSalem2_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>lib\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Town of Salem 2\TownOfSalem2_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>lib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

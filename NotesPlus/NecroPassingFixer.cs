@@ -26,7 +26,7 @@ namespace NotesPlus
 				NecroPassingVoteEntry necroPassingVoteEntry = NecroPassingFixer.NecroPassingPanel.voteEntries.Find((NecroPassingVoteEntry v) => v.Position == pos);
 				NecroPassingFixer.NecroPassingPanel.voteEntries.Remove(necroPassingVoteEntry);
 				UnityEngine.Object.Destroy(necroPassingVoteEntry);
-				from v in NecroPassingFixer.NecroPassingPanel.voteEntries
+				var a = from v in NecroPassingFixer.NecroPassingPanel.voteEntries
 				orderby v.Position
 				select v;
 				for (int i = 0; i < NecroPassingFixer.NecroPassingPanel.voteEntries.Count; i++)
