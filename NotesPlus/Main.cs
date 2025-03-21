@@ -1,5 +1,6 @@
 ﻿using System;
 using SML;
+using Server.Shared.Extensions;
 
 namespace NotesPlus
 {
@@ -23,6 +24,19 @@ namespace NotesPlus
 			catch
 			{
 				Console.WriteLine("maybe you're just better off as a plaguebearer");
+			}
+			try
+            {
+				Settings.SettingsCache.SetValue("Alignment Abbreviations", ModSettings.GetBool("Alignment Abbreviations", "synapsium.notes.plus"));
+				Settings.SettingsCache.SetValue("Faction Abbreviations", ModSettings.GetBool("Faction Abbreviations", "synapsium.notes.plus"));
+				Settings.SettingsCache.SetValue("Only Detect Marked", ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus"));
+				Settings.SettingsCache.SetValue("Show Faction Color", ModSettings.GetString("Show Faction Color", "synapsium.notes.plus"));
+				Settings.SettingsCache.SetValue("Additional Notes", ModSettings.GetBool("Additional Notes", "synapsium.notes.plus"));
+				Settings.SettingsCache.SetValue("Additional Notes Style", ModSettings.GetString("Additional Notes Style", "synapsium.notes.plus"));
+				Settings.SettingsCache.SetValue("Additional Notes Color", ModSettings.GetColor("Additional Notes Color", "synapsium.notes.plus"));
+			} catch
+            {
+				Console.WriteLine("damn your plague is so strong you gave the mod a bug, contact synapsium");
 			}
 		}
 	}

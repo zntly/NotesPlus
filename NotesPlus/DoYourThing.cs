@@ -601,8 +601,12 @@ namespace NotesPlus
 		public static void TheGoodStuff(string str, int key)
 		{
 			Tuple<Role, FactionType> tuple;
+			if ((bool)Settings.SettingsCache.GetValue("Additional Notes"))
+            {
+				str = DoYourThing.AdditionalNotesRegex.Replace(str, "");
+            }
 			DoYourThing.lockedplayers.TryGetValue(key, out tuple);
-			if (tuple == null && (!ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus") || (ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus") && str.IndexOf('*') != -1)))
+			if (tuple == null && (!(bool)Settings.SettingsCache.GetValue("Only Detect Marked") || ((bool)Settings.SettingsCache.GetValue("Only Detect Marked") && str.IndexOf('*') != -1)))
 			{
 				Match match = DoYourThing.RoleRegex.Match(str);
 				bool flag = false;
@@ -612,16 +616,16 @@ namespace NotesPlus
 					Role role = (Role)int.Parse(DoYourThing.RoleIdRegex.Match(value).Value);
 					Match match2 = DoYourThing.FactionIdRegex.Match(value);
 					FactionType factionType = FactionType.UNKNOWN;
-					if (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Always" || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Marked" && str.IndexOf('*') != -1) || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Roles" && role < Role.RANDOM_TOWN) || ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only On Override")
+					if ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Always" || ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only Marked" && str.IndexOf('*') != -1) || ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only Roles" && role < Role.RANDOM_TOWN) || (string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only On Override")
 					{
 						if (match2.Success)
 						{
 							factionType = (FactionType)int.Parse(match2.Value);
 						}
-						if (!match2.Success && ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") != "Only On Override")
+						if (!match2.Success && (string)Settings.SettingsCache.GetValue("Show Faction Color") != "Only On Override")
 						{
 							bool flag2 = false;
-							if (ModSettings.GetBool("Faction Abbreviations", "synapsium.notes.plus"))
+							if ((bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
 							{
 								Match match3 = DoYourThing.TraitorRegex.Match(str);
 								if (match3.Success)
@@ -692,7 +696,7 @@ namespace NotesPlus
 						return;
 					}
 				}
-				else if (ModSettings.GetBool("Alignment Abbreviations", "synapsium.notes.plus"))
+				else if ((bool)Settings.SettingsCache.GetValue("Alignment Abbreviations"))
 				{
 					Match match4;
 					if (Utils.IsBTOS2())
@@ -709,10 +713,10 @@ namespace NotesPlus
 						Tuple<Role, FactionType> tuple2 = DoYourThing.AlignmentToFaction(match4.Value);
 						Role item = tuple2.Item1;
 						FactionType factionType2 = FactionType.UNKNOWN;
-						if (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Always" || (ModSettings.GetString("Show Faction Color", "synapsium.notes.plus") == "Only Marked" && str.IndexOf('*') != -1))
+						if ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Always" || ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only Marked" && str.IndexOf('*') != -1))
 						{
 							bool flag4 = false;
-							if (ModSettings.GetBool("Faction Abbreviations", "synapsium.notes.plus"))
+							if ((bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
 							{
 								MatchCollection matchCollection = DoYourThing.TraitorRegex.Matches(str);
 								if (matchCollection.Count > 0)
@@ -795,7 +799,7 @@ namespace NotesPlus
 						factionType3 = (FactionType)int.Parse(match6.Value);
 					}
 				}
-				if (!flag6 && ModSettings.GetBool("Faction Abbreviations", "synapsium.notes.plus"))
+				if (!flag6 && (bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
 				{
 					Match match7 = DoYourThing.TraitorRegex.Match(str);
 					if (match7.Success)
@@ -829,7 +833,7 @@ namespace NotesPlus
 					return;
 				}
 			}
-			else if (tuple == null && ModSettings.GetBool("Only Detect Marked", "synapsium.notes.plus") && str.IndexOf('*') != -1 && Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
+			else if (tuple == null && (bool)Settings.SettingsCache.GetValue("Only Detect Marked") && str.IndexOf('*') != -1 && Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) != null)
 			{
 				try
 				{
@@ -1026,13 +1030,13 @@ namespace NotesPlus
 		// Token: 0x06000026 RID: 38
 		public static void TheAdditionalStuff(string str, int key)
 		{
-			if (ModSettings.GetBool("Additional Notes"))
+			if ((bool)Settings.SettingsCache.GetValue("Additional Notes"))
 			{
 				Match match = DoYourThing.AdditionalNotesRegex.Match(str);
 				GameObject notesLabel = DoYourThing.GetNotesLabel(key);
 				if (match.Success)
 				{
-					notesLabel.GetComponent<TextMeshProUGUI>().text = DoYourThing.GetAdditionalNoteText(match.Value, ColorUtility.ToHtmlStringRGB(ModSettings.GetColor("Additional Notes Color")));
+					notesLabel.GetComponent<TextMeshProUGUI>().text = DoYourThing.GetAdditionalNoteText(match.Value, ColorUtility.ToHtmlStringRGB((Color)Settings.SettingsCache.GetValue("Additional Notes Color")));
 				}
 				if (notesLabel.activeSelf != match.Success)
 				{
@@ -1044,8 +1048,8 @@ namespace NotesPlus
 		// Token: 0x06000027 RID: 39
 		public static string GetAdditionalNoteText(string str, string colorhex)
 		{
-			string @string = ModSettings.GetString("Additional Notes Style");
-			string text = (@string == "(Note)") ? "(" : ((@string == "[Note]") ? "[" : ((@string == "{Note}") ? "{" : ((@string == "- Note") ? "- " : "")));
+			string @string = (string)Settings.SettingsCache.GetValue("Additional Notes Style");
+			string text = (@string == "(Note)") ? "(" : ((@string == "[Note]") ? "[" : ((@string == "{Note}") ? "{" : ((@string == "- Note") ? "-" + " " : "")));
 			string text2 = (text == "(") ? ")" : ((text == "[") ? "]" : ((text == "{") ? "}" : ""));
 			return string.Concat(new string[]
 			{

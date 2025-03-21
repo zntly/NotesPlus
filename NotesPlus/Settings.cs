@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using SML;
+using UnityEngine;
+using Server.Shared.Extensions;
 
 namespace NotesPlus
 {
@@ -10,6 +12,60 @@ namespace NotesPlus
 	{
 		// Token: 0x17000001 RID: 1
 		// (get) Token: 0x06000002 RID: 2 RVA: 0x00002058 File Offset: 0x00000258
+		public ModSettings.CheckboxSetting AlignmentAbbreviations
+		{
+			get
+			{
+				return new ModSettings.CheckboxSetting
+				{
+					Name = "Alignment Abbreviations",
+					Description = "Detect abbreviations for alignments (e.g. TK, CK, NE, TPow, etc) does not work on roles",
+					DefaultValue = true,
+					AvailableInGame = false,
+					Available = true,
+					OnChanged = delegate (bool s)
+					{
+						Settings.SettingsCache.SetValue("Alignment Abbreviations", s);
+					}
+				};
+			}
+		}
+		public ModSettings.CheckboxSetting FactionAbbreviations
+		{
+			get
+			{
+				return new ModSettings.CheckboxSetting
+				{
+					Name = "Faction Abbreviations",
+					Description = "Allows you to type common faction terms (Townie, Cov, CS, aliases of listed and more) or Traitor terms (TT, CTT, ATT, Rec, Ego, Converted, aliases of listed) to quickly change the shown faction of a role",
+					DefaultValue = true,
+					AvailableInGame = false,
+					Available = true,
+					OnChanged = delegate (bool s)
+					{
+						Settings.SettingsCache.SetValue("Faction Abbreviations", s);
+					}
+				};
+			}
+		}
+		public ModSettings.CheckboxSetting OnlyDetectMarked
+		{
+			get
+			{
+				return new ModSettings.CheckboxSetting
+				{
+					Name = "Only Detect Marked",
+					Description = "Only detects roles from players you mark (you can mark a player by putting an asterisk (*) in their textbox)",
+					DefaultValue = false,
+					AvailableInGame = false,
+					Available = true,
+					OnChanged = delegate (bool s)
+					{
+						Settings.SettingsCache.SetValue("Only Detect Marked", s);
+					}
+				};
+			}
+		}
 		public ModSettings.DropdownSetting SetFactionSettings
 		{
 			get
@@ -20,7 +76,11 @@ namespace NotesPlus
 					Description = "When will a role show its faction color (if it shouldn't, it will show as gray)\nAlways - Roles will always use a faction color\nOnly Marked - Roles will only use their faction color if you mark them with an asterisk (*)\nOnly Roles - Roles will use their faction color, alignments will not\nOnly On Override - Roles will only use a faction color if a faction override is specified (e.g. [[#24,2]] for Coven-Vigilante)\nNever - Roles will always be gray and never use a faction color",
 					Options = this.FactionSettings,
 					AvailableInGame = false,
-					Available = true
+					Available = true,
+					OnChanged = delegate (string s)
+					{
+						Settings.SettingsCache.SetValue("Show Faction Color", s);
+					}
 				};
 			}
 		}
@@ -54,7 +114,11 @@ namespace NotesPlus
 					Description = "Have additional notes appear next to a person's name besides just a role - encase what you would like to show in [single brackets]",
 					DefaultValue = true,
 					AvailableInGame = false,
-					Available = true
+					Available = true,
+					OnChanged = delegate (bool s)
+					{
+						Settings.SettingsCache.SetValue("Additional Notes", s);
+					}
 				};
 			}
 		}
@@ -71,7 +135,11 @@ namespace NotesPlus
 					Description = "The color of additional notes",
 					DefaultValue = "#FFFFFF",
 					AvailableInGame = false,
-					Available = ModSettings.GetBool("Additional Notes")
+					Available = (bool)Settings.SettingsCache.GetValue("Additional Notes"),
+					OnChanged = delegate (Color s)
+					{
+						Settings.SettingsCache.SetValue("Additional Notes Color", s);
+					}
 				};
 			}
 		}
@@ -88,7 +156,11 @@ namespace NotesPlus
 					Description = "The way the additional notes look next to one's name (this does not change how you input additional notes, only how it appears in the playerlist)",
 					Options = this.AdditionalNotesStyleList,
 					AvailableInGame = true,
-					Available = ModSettings.GetBool("Additional Notes")
+					Available = ModSettings.GetBool("Additional Notes"),
+					OnChanged = delegate (string s)
+                    {
+						Settings.SettingsCache.SetValue("Additional Notes Style", s);
+                    }
 				};
 			}
 		}
@@ -111,6 +183,38 @@ namespace NotesPlus
 			"{Note}",
 			"- Note",
 			"Note"
+		};
+
+		public static Dictionary<string, object> SettingsCache = new Dictionary<string, object>()
+		{
+			{
+				"Alignment Abbreviations",
+				true
+			},
+			{
+				"Faction Abbreviations",
+				true
+			},
+			{
+				"Only Detect Marked",
+				false
+			},
+			{
+				"Show Faction Color",
+				"Always"
+			},
+			{
+				"Additional Notes",
+				true
+			},
+            {
+				"Additional Notes Style",
+				"(Note)"
+            },
+			{
+				"Additional Notes Color",
+				Color.white
+            }
 		};
 	}
 }
