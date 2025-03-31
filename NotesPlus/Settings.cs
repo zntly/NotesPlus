@@ -165,6 +165,25 @@ namespace NotesPlus
 			}
 		}
 
+		public ModSettings.DropdownSetting CopyToClipboardMode
+		{
+			get
+			{
+				return new ModSettings.DropdownSetting
+				{
+					Name = "Copy to Clipboard Mode",
+					Description = "How the Copy to Clipboard button will separate players",
+					Options = this.CopyToClipboardModes,
+					AvailableInGame = true,
+					Available = true,
+					OnChanged = delegate (string s)
+					{
+						Settings.SettingsCache.SetValue("Copy to Clipboard Mode", s);
+					}
+				};
+			}
+		}
+
 		// Token: 0x04000001 RID: 1
 		private readonly List<string> FactionSettings = new List<string>(5)
 		{
@@ -183,6 +202,12 @@ namespace NotesPlus
 			"{Note}",
 			"- Note",
 			"Note"
+		};
+
+		private readonly List<string> CopyToClipboardModes = new List<string>(2)
+		{
+			"Newlines",
+			"Spaces"
 		};
 
 		public static Dictionary<string, object> SettingsCache = new Dictionary<string, object>()
@@ -210,6 +235,10 @@ namespace NotesPlus
             {
 				"Additional Notes Style",
 				"(Note)"
+            },
+            {
+				"Copy to Clipboard Mode",
+				"Newlines"
             },
 			{
 				"Additional Notes Color",

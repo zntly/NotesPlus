@@ -10,6 +10,7 @@ using Mentions.UI;
 using Server.Shared.Extensions;
 using Server.Shared.Info;
 using Server.Shared.State;
+using Server.Shared.Utils;
 using Services;
 using SML;
 using TMPro;
@@ -27,9 +28,17 @@ namespace NotesPlus
 		{
 			if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
 			{
-				return GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num + Service.Game.Sim.simulation.validPlayerCount.Get()).gameObject.GetComponentInChildren<BMG_InputField>();
+				if (DoYourThing.inputHolder == null)
+                {
+					DoYourThing.inputHolder = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content");
+				}
+				return DoYourThing.inputHolder.transform.GetChild(num + Service.Game.Sim.simulation.validPlayerCount.Get()).gameObject.GetComponentInChildren<BMG_InputField>();
 			}
-			return GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content").transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
+			if (DoYourThing.inputHolder == null)
+			{
+				DoYourThing.inputHolder = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground/Scroll View/Viewport/Content");
+			}
+			return DoYourThing.inputHolder.transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
 		}
 
 		// Token: 0x0600000D RID: 13
@@ -38,6 +47,8 @@ namespace NotesPlus
 		{
 			if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DAY)
 			{
+				DoYourThing.playerList = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players");
+				DoYourThing.inputHolder = null;
 				DoYourThing.JANCanCode = false;
 				DoYourThing.alreadydone = new List<int>();
 				for (int i = 1; i < 16; i++)
@@ -126,7 +137,13 @@ namespace NotesPlus
 					DoYourThing.JANCanCode = true;
 					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
 					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
+					DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
+					DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
+					DoYourThing.PlayerNotesCopyToClipboard = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
 					DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
+					DoYourThing.PlayerNotesCopyToClipboard.transform.localPosition = new Vector3(150f, -365f, 0f);
+					Texture2D clipboardsprite = Main.Textures["copy-icon"];
+					DoYourThing.PlayerNotesCopyToClipboard.DoSpriteSwap(Sprite.Create(clipboardsprite, new Rect(0f, 0f, (float)clipboardsprite.width, (float)clipboardsprite.height), new Vector2(DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.x / (float)clipboardsprite.width, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.y / (float)clipboardsprite.height), DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pixelsPerUnit, 0U, SpriteMeshType.Tight, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.border));
 					try
 					{
 						TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
@@ -135,13 +152,18 @@ namespace NotesPlus
 							component.LookupKey = "";
 							component.NonLocalizedString = "Send Player Notes to Chat";
 						}
+						TooltipTrigger component2 = DoYourThing.PlayerNotesCopyToClipboard.GetComponent<TooltipTrigger>();
+						if (component2 != null)
+						{
+							component2.LookupKey = "";
+							component2.NonLocalizedString = "Copy to Clipboard";
+						}
 					}
 					catch
 					{
 					}
-					DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
-					DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
 					DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
+					DoYourThing.PlayerNotesCopyToClipboard.onClick.AddListener(new UnityAction(DoYourThing.OnCopyToClipboard));
 					return;
 				}
 			}
@@ -216,7 +238,7 @@ namespace NotesPlus
 				{
 					try
 					{
-						GameObject gameObject2 = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(keyValuePair2.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						GameObject gameObject2 = DoYourThing.playerList.transform.GetChild(keyValuePair2.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 						if (gameObject2)
 						{
 							RectTransform component3 = gameObject2.GetComponent<RectTransform>();
@@ -236,22 +258,33 @@ namespace NotesPlus
 						DoYourThing.JANCanCode = true;
 						DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
 						DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject3.transform);
+						DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
+						DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
+						DoYourThing.PlayerNotesCopyToClipboard = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject3.transform);
 						DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
+						DoYourThing.PlayerNotesCopyToClipboard.transform.localPosition = new Vector3(150f, -365f, 0f);
+						Texture2D clipboardsprite = Main.Textures["copy-icon"];
+						DoYourThing.PlayerNotesCopyToClipboard.DoSpriteSwap(Sprite.Create(clipboardsprite, new Rect(0f, 0f, (float)clipboardsprite.width, (float)clipboardsprite.height), new Vector2(DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.x / (float)clipboardsprite.width, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.y / (float)clipboardsprite.height), DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pixelsPerUnit, 0U, SpriteMeshType.Tight, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.border));
 						try
 						{
-							TooltipTrigger component2 = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+							TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+							if (component != null)
+							{
+								component.LookupKey = "";
+								component.NonLocalizedString = "Send Player Notes to Chat";
+							}
+							TooltipTrigger component2 = DoYourThing.PlayerNotesCopyToClipboard.GetComponent<TooltipTrigger>();
 							if (component2 != null)
 							{
 								component2.LookupKey = "";
-								component2.NonLocalizedString = "Send Player Notes to Chat";
+								component2.NonLocalizedString = "Copy to Clipboard";
 							}
 						}
 						catch
 						{
 						}
-						DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
-						DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
 						DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
+						DoYourThing.PlayerNotesCopyToClipboard.onClick.AddListener(new UnityAction(DoYourThing.OnCopyToClipboard));
 						return;
 					}
 				}
@@ -270,7 +303,7 @@ namespace NotesPlus
 						DoYourThing.lockedplayers.SetValue(i, Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null));
 						try
 						{
-							GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+							GameObject gameObject = DoYourThing.playerList.transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
@@ -622,7 +655,7 @@ namespace NotesPlus
 						{
 							factionType = (FactionType)int.Parse(match2.Value);
 						}
-						if (!match2.Success && (string)Settings.SettingsCache.GetValue("Show Faction Color") != "Only On Override")
+						if (!match2.Success)
 						{
 							bool flag2 = false;
 							if ((bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
@@ -634,7 +667,7 @@ namespace NotesPlus
 									factionType = DoYourThing.TraitorFaction(match3.Value);
 								}
 							}
-							if (!flag2)
+							if (!flag2 && (string)Settings.SettingsCache.GetValue("Show Faction Color") != "Only On Override")
 							{
 								if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_TOWN && role <= Role.TOWN_POWER) || role == Role.COMMON_TOWN)) || (Utils.IsBTOS2() && role >= Role.TOWN_PROTECTIVE && role <= Role.COVEN_UTILITY))
 								{
@@ -682,7 +715,7 @@ namespace NotesPlus
 						Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 						try
 						{
-							GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+							GameObject gameObject = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
@@ -749,7 +782,7 @@ namespace NotesPlus
 							Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 							try
 							{
-								GameObject gameObject2 = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+								GameObject gameObject2 = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 								if (gameObject2)
 								{
 									RectTransform component2 = gameObject2.GetComponent<RectTransform>();
@@ -819,7 +852,7 @@ namespace NotesPlus
 					Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 					try
 					{
-						GameObject gameObject3 = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						GameObject gameObject3 = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 						if (gameObject3)
 						{
 							RectTransform component3 = gameObject3.GetComponent<RectTransform>();
@@ -856,32 +889,26 @@ namespace NotesPlus
 		public static void OnSendToChat()
 		{
 			string text = "";
-			for (int i = 1; i < 16; i++)
+			for (int i = 0; i < 16; i++)
 			{
 				try
 				{
 					BMG_InputField input = DoYourThing.GetInput(i);
 					if (input.gameObject.activeInHierarchy)
 					{
-						string text2 = input.text;
+						string text2 = input.text.ResolveUnicodeSequences();
 						MatchCollection matchCollection = DoYourThing.LinkRoleRegex.Matches(text2);
 						for (int j = 0; j < matchCollection.Count; j++)
 						{
 							string value = DoYourThing.RoleIdRegex.Match(matchCollection[j].Value).Value;
-							string text3 = "";
 							Match match = DoYourThing.FactionIdRegex.Match(matchCollection[j].Value);
 							if (match.Success && int.Parse(value) < 100)
 							{
-								text3 = match.Value;
+								text2 = DoYourThing.PostChatRegex.Replace(text2, "[[#" + value.ToString() + "," + match.Value.ToString() + "]]", 1);
 							}
-							string text4 = "[[#" + value.ToString();
-							if (text3 != "")
-							{
-								text4 = text4 + "," + text3.ToString();
-							}
-							text4 += "]]";
-							text2 = DoYourThing.PostChatRegex.Replace(text2, text4, 1);
 						}
+						DoYourThing.mentionsPanel.mentionsProvider.ProcessEncodedText(text2);
+						text2 = DoYourThing.mentionsPanel.mentionsProvider.EncodeText(text2);
 						text = string.Concat(new string[]
 						{
 							text,
@@ -900,13 +927,54 @@ namespace NotesPlus
 			PasteTextController.FormatAndPasteToChat(text, DoYourThing.mentionsPanel);
 		}
 
+		public static void OnCopyToClipboard()
+		{
+			string text = "";
+			for (int i = 0; i < 16; i++)
+			{
+				try
+				{
+					BMG_InputField input = DoYourThing.GetInput(i);
+					if (input.gameObject.activeInHierarchy)
+					{
+						string text2 = input.text.ResolveUnicodeSequences();
+						MatchCollection matchCollection = DoYourThing.LinkRoleRegex.Matches(text2);
+						for (int j = 0; j < matchCollection.Count; j++)
+						{
+							string value = DoYourThing.RoleIdRegex.Match(matchCollection[j].Value).Value;
+							Match match = DoYourThing.FactionIdRegex.Match(matchCollection[j].Value);
+							if (match.Success && int.Parse(value) < 100)
+							{
+								text2 = DoYourThing.PostChatRegex.Replace(text2, "[[#" + value.ToString() + "," + match.Value.ToString() + "]]", 1);
+							}
+						}
+						DoYourThing.mentionsPanel.mentionsProvider.ProcessEncodedText(text2);
+						text2 = DoYourThing.mentionsPanel.mentionsProvider.EncodeText(text2);
+						text = string.Concat(new string[]
+						{
+							text,
+							i.ToString(),
+							" ",
+							text2,
+							(string)Settings.SettingsCache.GetValue("Copy to Clipboard Mode") == "Newlines" ? "\n" : " "
+						});
+					}
+				}
+				catch
+				{
+					i = 16;
+				}
+			}
+			BMG_Clipboard.Clipboard = text;
+		}
+
 		// Token: 0x06000022 RID: 34
 		public static FactionType TraitorFaction(string str)
 		{
 			string a = str.ToLower();
 			if (Utils.IsBTOS2())
 			{
-				if (a == "ptt" || a == "pantt" || a == "pandtt" || a == "pandoratt" || a == "pand" || a == "pandora")
+				if (a == "ptt" || a == "pantt" || a == "pandtt" || a == "pandoratt" || a == "pand" || a == "pandora" || (Utils.IsPandora() && (a == "cov" || a == "coven" || a == "ctt" || a == "covtt" | a == "coventt" || a == "att" || a == "apoctt" || a == "apocalypsett" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")))
 				{
 					return (FactionType)43;
 				}
@@ -918,7 +986,7 @@ namespace NotesPlus
 				{
 					return (FactionType)42;
 				}
-				if (a == "comp" || a == "comk" || a == "compliance" || a == "compliant" || a == "comkiller" || a == "compkiller")
+				if (a == "comp" || a == "comk" || a == "compliance" || a == "compliant" || a == "comkiller" || a == "compkiller" || (Utils.IsCompliance() && (a == "sk" || a == "arso" || a == "arsonist" || a == "ww" || a == "werewolf" || a == "shroud")))
 				{
 					return (FactionType)44;
 				}
@@ -945,7 +1013,7 @@ namespace NotesPlus
 				{
 					return FactionType.TOWN;
 				}
-				if (a == "cov" || a == "coven" || a == "ctt" || (a == "covtt" | a == "coventt"))
+				if (a == "cov" || a == "coven" || a == "ctt" || a == "covtt" | a == "coventt")
 				{
 					return FactionType.COVEN;
 				}
@@ -994,7 +1062,7 @@ namespace NotesPlus
 		{
 			try
 			{
-				GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject.SetActive(false);
+				DoYourThing.playerList.transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject.SetActive(false);
 			}
 			catch
 			{
@@ -1004,13 +1072,13 @@ namespace NotesPlus
 		// Token: 0x06000024 RID: 36
 		public static GameObject GetNotesLabel(int num)
 		{
-			return GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("NotesPlusLabel").gameObject;
+			return DoYourThing.playerList.transform.GetChild(num + 1).Find("LayoutGroup").Find("NotesPlusLabel").gameObject;
 		}
 
 		// Token: 0x06000025 RID: 37
 		public static void CreateNotesLabel(int num)
 		{
-			GameObject gameObject = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players").transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+			GameObject gameObject = DoYourThing.playerList.transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 			if (gameObject)
 			{
 				GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject);
@@ -1084,6 +1152,8 @@ namespace NotesPlus
 		// Token: 0x04000009 RID: 9
 		public static BMG_Button PlayerNotesSendToChat;
 
+		public static BMG_Button PlayerNotesCopyToClipboard;
+
 		// Token: 0x0400000A RID: 10
 		public static MentionPanel mentionsPanel;
 
@@ -1110,5 +1180,9 @@ namespace NotesPlus
 
 		// Token: 0x04000012 RID: 18
 		public static Regex AdditionalNotesRegex = new Regex("(?<=(?<!\\[)\\[)[^\\[\\]]*(?=\\](?!\\]))");
+
+		public static GameObject playerList;
+
+		public static GameObject inputHolder;
 	}
 }

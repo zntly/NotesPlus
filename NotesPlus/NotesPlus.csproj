@@ -85,6 +85,9 @@
   <ItemGroup>
     <EmbeddedResource Include="resources\images\thumbnail.png" />
     <EmbeddedResource Include="resources\modinfo.json" />
+	<EmbeddedResource Include="resources\modpage.txt" />
+	<EmbeddedResource Include="resources\assetbundles.notes.plus" />
+    <EmbeddedResource Include="resources\assetbundles.notes.plus_mac" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

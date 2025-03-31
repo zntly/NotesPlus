@@ -1,0 +1,119 @@
+<size=200%><align="center"><b>Player Notes<color=#FF0000>+</color></b></align></size>
+<size=125%><b>Settings</b></size>
+<indent=7%><b>Alignment Abbreviations:</b> Allows you to put common abbreviations for alignments instead of manually mentioning them with #. All abbreviations are in the <b>Alignment Abbreviations</b> section.</indent>
+
+<indent=7%><b>Faction Abbreviations:</b> Allows you to put common abbreviations for factions or traitors instead of manually doing a faction override. All abbreviations are in the <b>Faction Abbreviations</b> section.</indent>
+
+<indent=7%><b>Only Detect Marked:</b> This makes roles not show up on the right unless you mark it with an asterisk (*).</indent>
+
+<indent=7%><b>Show Faction Color:</b> Determines when a role shows the faction color or when it should just show grey.</indent>
+
+<indent=12%><size=75%><b>Always:</b> Roles always show their faction color and never show grey.
+<b>Only Marked:</b> Roles show their faction color when marked with an asterisk (*), otherwise they show grey.
+<b>Only Roles:</b> Roles show their faction color, alignments show grey.
+<b>Only On Override:</b> Roles will only show their faction color when an override is done, either manually or with Faction Abbreviations.
+<b>Never:</b> Roles never show their faction color, and always show grey.</size></indent>
+
+<indent=7%><b>Additional Notes:</b> Allows you to put text in [single brackets] and it will show in the playerlist, to the right of set roles.</indent>
+
+<indent=7%><b>Additional Notes Color:</b> Determines the color of additional notes.</indent>
+
+<indent=7%><b>Additional Notes Style:</b> Accessible mid-game. Determines how additional notes will look on the playerlist. You still input additional notes with [single brackets], this only changes how it looks on the playerlist.</indent>
+
+<indent=7%><b>Copy to Clipboard Mode:</b> Accessible mid-game. Determines how each player is separated when copying Player Notes to the clipboard.</indent>
+
+<size=125%><b>General Information</b></size>
+If a role is revealed by the game, such as by Admirer proposal, PM/Witch reveal, Mayor/Marsh/Pros reveal, teammates/yourself, etc. it will be locked.
+You cannot change what role shows in the playerlist when the role is locked, but you can change the faction.
+Using a manual override (use any role id, only faction id is checked) or with Faction Abbreviations, you can change the shown faction of a locked role.
+
+This mod adds a Send to Chat and a Copy to Clipboard button to your Player Notes. They do exactly what you should expect them to do.
+
+<b>(Applies to BToS2 Only)</b>
+If you are playing a game with Pandora's Box, all Coven and Apocalypse factions will be set to Pandora automatically.
+If you are playing a game with Compliant Killers, all NK factions will be set to Compliance automatically.
+<size=60%>The only way to avoid this and use a Coven/Apoc/NK faction is with a manual override (for example, "#Admirer coven" becomes Pandora, but [[#1,2]] will stay Coven),
+but is there much reason to mention these factions with the specific modifiers on?</size>
+
+<size=125%><b>Alignment Abbreviations</b></size>
+Below are all of the valid alignment abbreviations, each one separated by a comma. Capitals do not matter.
+<indent=7%><b>Town Investigative:</b> TI</indent>
+
+<indent=7%><b>Town Protective:</b> TP</indent>
+
+<indent=7%><b>Town Support:</b> TS</indent>
+
+<indent=7%><b>Town Power:</b> TPOW, TPOWER</indent>
+
+<indent=7%><b>Town Killing:</b> TK</indent>
+
+<indent=7%><b>Random Town:</b> RT, TOWN, TOWNIE</indent>
+
+<indent=7%><b>Common Town:</b> CT</indent>
+
+<indent=7%><b>Coven Deception:</b> CD</indent>
+
+<indent=7%><b>Coven Utility:</b> CU</indent>
+
+<indent=7%><b>Coven Power:</b> CP, CPOW, CPOWER</indent>
+
+<indent=7%><b>Coven Killing:</b> CK</indent>
+
+<indent=7%><b>Random Coven:</b> RC, COV, COVEN</indent>
+
+<indent=7%><b>Common Coven:</b> CC</indent>
+
+<indent=7%><b>Neutral Evil:</b> NE</indent>
+
+<indent=7%><b>Neutral Killing:</b> NK</indent>
+
+<indent=7%><b>Random Neutral:</b> RN, NEUT, NEUTRAL</indent>
+
+<indent=7%><b>Neutral Apocalypse/Random Apocalypse:</b> NA, RA, APOC, APOCALYPSE, HORSEMAN, HORSEMEN</indent>
+<b>BToS2 Only</b>
+<indent=7%><b>Common Neutral:</b> CN</indent>
+
+<indent=7%><b>Neutral Pariah:</b> NP, PARIAH</indent>
+
+<indent=7%><b>Neutral Special:</b> NS</indent>
+
+<size=125%><b>Faction Abbreviations</b></size>
+Below are all of the valid faction abbreviations, each one separated by a comma. Capitals do not matter.
+<indent=7%><b>Town:</b> TOWN, TOWNIE</indent>
+
+<indent=7%><b>Coven:</b> COV, COVEN, CTT, COVTT, COVENTT</indent>
+
+<indent=7%><b>Apocalypse:</b> APOC, APOCALYPSE, HORSEMAN, HORSEMEN, ATT, APOCTT, APOCALYPSETT</indent>
+
+<indent=7%><b>Serial Killer:</b> SK</indent>
+
+<indent=7%><b>Arsonist:</b> ARSO, ARSONIST</indent>
+
+<indent=7%><b>Werewolf:</b> WW, WEREWOLF</indent>
+
+<indent=7%><b>Shroud:</b> SHROUD</indent>
+
+<indent=7%><b>Executioner:</b> EXE, EXECUTIONER</indent>
+
+<indent=7%><b>Jester:</b> JEST, JESTER</indent>
+
+<indent=7%><b>Vampire:</b> VAMP, VAMPIRE, VAMPD, VAMPIRED, BIT, BITTEN, CONVERTED, CONVERT, CONV</indent>
+
+<indent=7%><b>Cursed Soul:</b> CS</indent>
+
+<indent=7%><b>Town Traitor:</b> TT, TRAITOR</indent>
+<indent=14%><size=60%>The faction for Town Traitor is dynamic depending on the rolelist.
+If it is Pandora's Box (BToS2 Only), it will map to the Pandora faction.
+If it is Town Traitor (or Coven Town Traitor in BToS2), it will map to the Coven faction.
+If it is Apoc Town Traitor (BToS2 Only), it will map to the Apocalypse faction.
+If none of the above, it maps to the Coven faction.</size></indent>
+<b>BToS2 Only</b>
+<indent=7%><b>Recruit:</b> REC, RECD, RECRUIT, RECRUITED</indent>
+
+<indent=7%><b>Egotist Townie:</b> EGO, EGOTIST, EGOIST, EGOTOWN, EGOTOWNIE</indent>
+
+<indent=7%><b>Pandora:</b> PAND, PANDORA, PTT, PANTT, PANDTT, PANDORATT</indent>
+<indent=7%><size=50%>(+ All Coven/Apocalypse abbreviations if Pandora's Box is enabled)</size></indent>
+
+<indent=7%><b>Compliance:</b> COMP, COMK, COMPLIANT, COMPLIANCE, COMKILLER, COMPKILLER</indent>
+<indent=7%><size=50%>(+ All NK abbreviations if Compliant Killers is enabled)</size></indent>
