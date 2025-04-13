@@ -11,7 +11,7 @@ namespace NotesPlus
 	[Mod.SalemMod]
 	public class Main
 	{
-		// Token: 0x06000008 RID: 8 RVA: 0x00002454 File Offset: 0x00000654
+		// Token: 0x06000008 RID: 8 RVA: 0x00002454 File Offset: 0x0000065
 		public void Start()
 		{
 			Console.WriteLine("anyone can be an enchanter if they try hard enough");
