@@ -331,7 +331,7 @@ namespace NotesPlus
 			DoYourThing.RoleIdRegex = new Regex("\\d+");
 			DoYourThing.FactionIdRegex = new Regex("(?<=,)\\d+");
 			DoYourThing.AlignmentRegex = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cc|cov|coven|rn|neut|neutral)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
-			DoYourThing.AlignmentRegexBTOS = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cov|cc|coven|rn|neut|neutral|cn|np|ns|pariah)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+			DoYourThing.AlignmentRegexBTOS = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tg|tgov|te|texe|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cov|cc|coven|rn|neut|neutral|np|ns|no|nout|nspec|pariah)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
 			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 		}
 
@@ -416,50 +416,46 @@ namespace NotesPlus
 				{
 					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, FactionType.APOCALYPSE);
 				}
-				if (a == "cn")
-				{
-					return new Tuple<Role, FactionType>((Role)121, FactionType.NONE);
-				}
 				if (a == "np" || a == "pariah")
 				{
 					return new Tuple<Role, FactionType>((Role)119, FactionType.NONE);
-				}
-				if (a == "ns")
-				{
-					return new Tuple<Role, FactionType>((Role)120, FactionType.NONE);
 				}
 			}
 			else
 			{
 				if (a == "ti")
 				{
-					return new Tuple<Role, FactionType>(Role.TOWN_SUPPORT, FactionType.TOWN);
+					return new Tuple<Role, FactionType>(Role.TOWN_KILLING, FactionType.TOWN);
 				}
 				if (a == "tp")
 				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_COVEN, FactionType.TOWN);
+					return new Tuple<Role, FactionType>(Role.TOWN_SUPPORT, FactionType.TOWN);
 				}
 				if (a == "ts")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_UTILITY, FactionType.TOWN);
+					return new Tuple<Role, FactionType>(Role.RANDOM_COVEN, FactionType.TOWN);
 				}
-				if (a == "tpow" || a == "tpower")
+				if (a == "tg" || a == "tgov")
+				{
+					return new Tuple<Role, FactionType>((Role)120, FactionType.TOWN);
+				}
+                if (a == "te" || a == "texe")
+                {
+                    return new Tuple<Role, FactionType>((Role)119, FactionType.TOWN);
+                }
+                if (a == "tk")
 				{
 					return new Tuple<Role, FactionType>(Role.TOWN_POWER, FactionType.TOWN);
 				}
-				if (a == "tk")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_KILLING, FactionType.TOWN);
-				}
 				if (a == "rt" || a == "town" || a == "townie")
 				{
-					return new Tuple<Role, FactionType>(Role.TOWN_PROTECTIVE, FactionType.TOWN);
+					return new Tuple<Role, FactionType>(Role.TOWN_INVESTIGATIVE, FactionType.TOWN);
 				}
 				if (a == "ct")
 				{
-					return new Tuple<Role, FactionType>(Role.TOWN_KILLING, FactionType.TOWN);
+					return new Tuple<Role, FactionType>(Role.TOWN_PROTECTIVE, FactionType.TOWN);
 				}
-				bool flag = Utils.IsPandora();
+                bool flag = Utils.IsPandora();
 				FactionType item = FactionType.COVEN;
 				if (flag)
 				{
@@ -467,31 +463,31 @@ namespace NotesPlus
 				}
 				if (a == "cd")
 				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, item);
+					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, item);
 				}
 				if (a == "ck")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, item);
+					return new Tuple<Role, FactionType>(Role.COVEN_POWER, item);
 				}
 				if (a == "cp" || a == "cpow" || a == "cpower")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, item);
+					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, item);
 				}
 				if (a == "cu")
 				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, item);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, item);
 				}
 				if (a == "rc" || a == "cov" || a == "coven")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, item);
+					return new Tuple<Role, FactionType>(Role.COVEN_KILLING, item);
 				}
 				if (a == "cc")
 				{
-					return new Tuple<Role, FactionType>(Role.COVEN_POWER, item);
+					return new Tuple<Role, FactionType>(Role.COVEN_UTILITY, item);
 				}
 				if (a == "ne")
 				{
-					return new Tuple<Role, FactionType>(Role.COMMON_COVEN, FactionType.NONE);
+					return new Tuple<Role, FactionType>(Role.ANY, FactionType.NONE);
 				}
 				bool flag2 = Utils.IsCompliance();
 				FactionType item2 = FactionType.NONE;
@@ -501,11 +497,11 @@ namespace NotesPlus
 				}
 				if (a == "nk")
 				{
-					return new Tuple<Role, FactionType>((Role)118, item2);
+					return new Tuple<Role, FactionType>(Role.COMMON_TOWN, item2);
 				}
 				if (a == "rn" || a == "neut" || a == "neutral")
 				{
-					return new Tuple<Role, FactionType>(Role.COMMON_TOWN, FactionType.NONE);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, FactionType.NONE);
 				}
 				FactionType item3 = FactionType.APOCALYPSE;
 				if (flag)
@@ -514,21 +510,17 @@ namespace NotesPlus
 				}
 				if (a == "na" || a == "ra" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")
 				{
-					return new Tuple<Role, FactionType>(Role.ANY, item3);
-				}
-				if (a == "cn")
-				{
-					return new Tuple<Role, FactionType>((Role)121, FactionType.NONE);
+					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, item3);
 				}
 				if (a == "np" || a == "pariah")
 				{
-					return new Tuple<Role, FactionType>((Role)119, FactionType.NONE);
+					return new Tuple<Role, FactionType>(Role.COMMON_COVEN, FactionType.NONE);
 				}
-				if (a == "ns")
-				{
-					return new Tuple<Role, FactionType>((Role)120, FactionType.NONE);
-				}
-			}
+                if (a == "ns" || a == "nspec" || a == "no" || a == "nout")
+                {
+                    return new Tuple<Role, FactionType>((Role)118, FactionType.NONE);
+                }
+            }
 			return new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE);
 		}
 
@@ -669,21 +661,21 @@ namespace NotesPlus
 							}
 							if (!flag2 && (string)Settings.SettingsCache.GetValue("Show Faction Color") != "Only On Override")
 							{
-								if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_TOWN && role <= Role.TOWN_POWER) || role == Role.COMMON_TOWN)) || (Utils.IsBTOS2() && role >= Role.TOWN_PROTECTIVE && role <= Role.COVEN_UTILITY))
+								if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_TOWN && role <= Role.TOWN_POWER) || role == Role.COMMON_TOWN)) || (Utils.IsBTOS2() && (role >= Role.TOWN_INVESTIGATIVE && role <= Role.RANDOM_COVEN) || role == (Role)119 || role == (Role)120))
 								{
 									factionType = FactionType.TOWN;
 								}
-								else if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_COVEN && role <= Role.COVEN_POWER) || role == Role.COMMON_COVEN)) || (Utils.IsBTOS2() && role >= Role.COVEN_DECEPTION && role <= Role.NEUTRAL_APOCALYPSE))
+								else if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_COVEN && role <= Role.COVEN_POWER) || role == Role.COMMON_COVEN)) || (Utils.IsBTOS2() && role >= Role.COVEN_KILLING && role <= Role.NEUTRAL_KILLING))
 								{
 									factionType = FactionType.COVEN;
 								}
-								else if ((!Utils.IsBTOS2() && role >= Role.RANDOM_NEUTRAL && role <= Role.NEUTRAL_EVIL) || (Utils.IsBTOS2() && role >= Role.COMMON_TOWN && role <= (Role)121))
+                                else if ((Utils.IsBTOS2() && role == Role.NEUTRAL_EVIL) || (!Utils.IsBTOS2() && role == Role.NEUTRAL_APOCALYPSE))
+                                {
+                                    factionType = FactionType.APOCALYPSE;
+                                }
+                                else if (role >= Role.RANDOM_TOWN)
 								{
 									factionType = FactionType.NONE;
-								}
-								else if ((Utils.IsBTOS2() && role == Role.ANY) || (!Utils.IsBTOS2() && role == Role.NEUTRAL_APOCALYPSE))
-								{
-									factionType = FactionType.APOCALYPSE;
 								}
 								else
 								{
@@ -695,7 +687,7 @@ namespace NotesPlus
 									{
 										factionType = (FactionType)43;
 									}
-									else if ((role == (Role)118 || factionType == FactionType.SERIALKILLER || factionType == FactionType.ARSONIST || factionType == FactionType.WEREWOLF || factionType == FactionType.SHROUD) && Utils.IsCompliance())
+									else if ((role == Role.COMMON_TOWN || factionType == FactionType.SERIALKILLER || factionType == FactionType.ARSONIST || factionType == FactionType.WEREWOLF || factionType == FactionType.SHROUD) && Utils.IsCompliance())
 									{
 										factionType = (FactionType)44;
 									}

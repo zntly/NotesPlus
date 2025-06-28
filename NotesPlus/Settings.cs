@@ -73,7 +73,7 @@ namespace NotesPlus
 				return new ModSettings.DropdownSetting
 				{
 					Name = "Show Faction Color",
-					Description = "When will a role show its faction color (if it shouldn't, it will show as gray)\nAlways - Roles will always use a faction color\nOnly Marked - Roles will only use their faction color if you mark them with an asterisk (*)\nOnly Roles - Roles will use their faction color, alignments will not\nOnly On Override - Roles will only use a faction color if a faction override is specified (e.g. [[#24,2]] for Coven-Vigilante)\nNever - Roles will always be gray and never use a faction color",
+					Description = "When will a role show its faction color (if it shouldn't, it will show as white)\nAlways - Roles will always use a faction color\nOnly Marked - Roles will only use their faction color if you mark them with an asterisk (*)\nOnly Roles - Roles will use their faction color, alignments will not\nOnly On Override - Roles will only use a faction color if a faction override is specified (e.g. [[#24,2]] for Coven-Vigilante)\nNever - Roles will always be white and never use a faction color",
 					Options = this.FactionSettings,
 					AvailableInGame = false,
 					Available = true,
