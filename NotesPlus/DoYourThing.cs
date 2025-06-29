@@ -673,7 +673,7 @@ namespace NotesPlus
                                 {
                                     factionType = FactionType.APOCALYPSE;
                                 }
-                                else if (role >= Role.RANDOM_TOWN)
+                                else if (role >= Role.RANDOM_TOWN && role < (Role)200)
 								{
 									factionType = FactionType.NONE;
 								}
