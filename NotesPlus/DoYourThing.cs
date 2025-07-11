@@ -242,7 +242,9 @@ namespace NotesPlus
 						if (gameObject2)
 						{
 							RectTransform component3 = gameObject2.GetComponent<RectTransform>();
-							float x = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(keyValuePair2.Value.Item1, keyValuePair2.Value.Item2) + ")").x * 0.34718204f, 150f);
+                            float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
+                            float maxsize = multi == 1f ? 9999f : 150f;
+                            float x = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(keyValuePair2.Value.Item1, keyValuePair2.Value.Item2) + ")").x * multi, maxsize);
 							component3.sizeDelta = new Vector2(x, 30f);
 						}
 					}
@@ -308,7 +310,9 @@ namespace NotesPlus
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
 								Tuple<Role, FactionType> tiemp = Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null);
-								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(tiemp.Item1, tiemp.Item2) + ")").x * 0.34718204f, 150f);
+								float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
+								float maxsize = multi == 1f ? 9999f : 150f;
+								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(tiemp.Item1, tiemp.Item2) + ")").x * multi, maxsize);
 								component.sizeDelta = new Vector2(x, 30f);
 							}
 						}
@@ -711,7 +715,9 @@ namespace NotesPlus
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
-								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(role, factionType) + ")").x * 0.34718204f, 150f);
+                                float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
+                                float maxsize = multi == 1f ? 9999f : 150f;
+                                float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(role, factionType) + ")").x * multi, maxsize);
 								component.sizeDelta = new Vector2(x, 30f);
 							}
 						}
@@ -778,7 +784,9 @@ namespace NotesPlus
 								if (gameObject2)
 								{
 									RectTransform component2 = gameObject2.GetComponent<RectTransform>();
-									float x2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(item, factionType2) + ")").x * 0.34718204f, 150f);
+                                    float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
+                                    float maxsize = multi == 1f ? 9999f : 150f;
+                                    float x2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(item, factionType2) + ")").x * multi, maxsize);
 									component2.sizeDelta = new Vector2(x2, 30f);
 								}
 							}
@@ -848,7 +856,9 @@ namespace NotesPlus
 						if (gameObject3)
 						{
 							RectTransform component3 = gameObject3.GetComponent<RectTransform>();
-							float x3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(item2, factionType3) + ")").x * 0.34718204f, 150f);
+                            float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
+                            float maxsize = multi == 1f ? 9999f : 150f;
+                            float x3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(item2, factionType3) + ")").x * multi, maxsize);
 							component3.sizeDelta = new Vector2(x3, 30f);
 						}
 					}
