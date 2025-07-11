@@ -21,6 +21,8 @@ namespace NotesPlus
 		// Token: 0x06000031 RID: 49 RVA: 0x000048E8 File Offset: 0x00002AE8
 		public static void RemoveFromNecroPassing(int pos)
 		{
+			if (!NecroPassingFixer.NecroPassingPanel)
+				return;
 			if (NecroPassingFixer.NecroPassingPanel.voteEntries.Any((NecroPassingVoteEntry v) => v.Position == pos))
 			{
 				NecroPassingVoteEntry necroPassingVoteEntry = NecroPassingFixer.NecroPassingPanel.voteEntries.Find((NecroPassingVoteEntry v) => v.Position == pos);
