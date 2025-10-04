@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DoYourThing.cs" />
+    <Compile Include="FilterByFactionFixer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="NecroPassingFixer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
