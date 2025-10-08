@@ -122,10 +122,9 @@ namespace NotesPlus
 				};
 			}
 		}
-
-		// Token: 0x17000004 RID: 4
-		// (get) Token: 0x06000006 RID: 6 RVA: 0x000020F3 File Offset: 0x000002F3
-		public ModSettings.ColorPickerSetting AdditionalNotesColor
+        // Token: 0x17000004 RID: 4
+        // (get) Token: 0x06000006 RID: 6 RVA: 0x000020F3 File Offset: 0x000002F3
+        public ModSettings.ColorPickerSetting AdditionalNotesColor
 		{
 			get
 			{
@@ -197,8 +196,8 @@ namespace NotesPlus
 		// Token: 0x04000002 RID: 2
 		private readonly List<string> AdditionalNotesStyleList = new List<string>(5)
 		{
-			"(Note)",
 			"[Note]",
+			"(Note)",
 			"{Note}",
 			"- Note",
 			"Note"
@@ -234,7 +233,7 @@ namespace NotesPlus
 			},
             {
 				"Additional Notes Style",
-				"(Note)"
+				"[Note]"
             },
             {
 				"Copy to Clipboard Mode",

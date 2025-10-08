@@ -24,6 +24,33 @@ namespace NotesPlus
 	public class DoYourThing
 	{
 		// Token: 0x0600000C RID: 12
+		public static void HandleInputFields()
+		{
+            for (int current = 1; current < 16; current++)
+            {
+                try
+                {
+                    if (!DoYourThing.alreadydone.Contains(current))
+                    {
+                        int i = current;
+                        BMG_InputField input = DoYourThing.GetInput(i);
+                        input.characterLimit = 99999;
+                        void DoingTheThing(string str)
+                        {
+                            DoYourThing.TheGoodStuff(str, i - 1);
+                            DoYourThing.TheAdditionalStuff(str, i - 1);
+                        }
+                        input.onValueChanged.AddListener(new UnityAction<string>(DoingTheThing));
+                        DoYourThing.CreateNotesLabel(i - 1);
+                        DoYourThing.alreadydone.Add(i);
+                    }
+                }
+                catch
+                {
+                    current = 16;
+                }
+            }
+        }
 		public static BMG_InputField GetInput(int num)
 		{
 			if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
@@ -51,69 +78,8 @@ namespace NotesPlus
 				DoYourThing.inputHolder = null;
 				DoYourThing.JANCanCode = false;
 				DoYourThing.alreadydone = new List<int>();
-				for (int i = 1; i < 16; i++)
-				{
-					try
-					{
-						BMG_InputField input = DoYourThing.GetInput(i);
-						input.characterLimit = 99999;
-						switch (i)
-						{
-						case 1:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing1));
-							break;
-						case 2:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing2));
-							break;
-						case 3:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing3));
-							break;
-						case 4:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing4));
-							break;
-						case 5:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing5));
-							break;
-						case 6:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing6));
-							break;
-						case 7:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing7));
-							break;
-						case 8:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing8));
-							break;
-						case 9:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing9));
-							break;
-						case 10:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing10));
-							break;
-						case 11:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing11));
-							break;
-						case 12:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing12));
-							break;
-						case 13:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing13));
-							break;
-						case 14:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing14));
-							break;
-						case 15:
-							input.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing15));
-							break;
-						}
-						DoYourThing.CreateNotesLabel(i - 1);
-						DoYourThing.alreadydone.Add(i);
-					}
-					catch
-					{
-						i = 16;
-					}
-				}
-				DoYourThing.ourknown = new StateProperty<Dictionary<int, Tuple<Role, FactionType>>>(new Dictionary<int, Tuple<Role, FactionType>>());
+				DoYourThing.HandleInputFields();
+                DoYourThing.ourknown = new StateProperty<Dictionary<int, Tuple<Role, FactionType>>>(new Dictionary<int, Tuple<Role, FactionType>>());
 				DoYourThing.lockedplayers = new Dictionary<int, Tuple<Role, FactionType>>();
 				foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair in Service.Game.Sim.simulation.knownRolesAndFactions.Get())
 				{
@@ -169,72 +135,8 @@ namespace NotesPlus
 			}
 			else if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DISCUSSION)
 			{
-				for (int j = 1; j < 16; j++)
-				{
-					try
-					{
-						if (!DoYourThing.alreadydone.Contains(j))
-						{
-							BMG_InputField input2 = DoYourThing.GetInput(j);
-							input2.characterLimit = 99999;
-							switch (j)
-							{
-							case 1:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing1));
-								break;
-							case 2:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing2));
-								break;
-							case 3:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing3));
-								break;
-							case 4:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing4));
-								break;
-							case 5:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing5));
-								break;
-							case 6:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing6));
-								break;
-							case 7:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing7));
-								break;
-							case 8:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing8));
-								break;
-							case 9:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing9));
-								break;
-							case 10:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing10));
-								break;
-							case 11:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing11));
-								break;
-							case 12:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing12));
-								break;
-							case 13:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing13));
-								break;
-							case 14:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing14));
-								break;
-							case 15:
-								input2.onValueChanged.AddListener(new UnityAction<string>(DoYourThing.DoingTheThing15));
-								break;
-							}
-							DoYourThing.CreateNotesLabel(j - 1);
-							DoYourThing.alreadydone.Add(j);
-						}
-					}
-					catch
-					{
-						j = 16;
-					}
-				}
-				foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair2 in DoYourThing.lockedplayers)
+                DoYourThing.HandleInputFields();
+                foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair2 in DoYourThing.lockedplayers)
 				{
 					try
 					{
@@ -340,11 +242,6 @@ namespace NotesPlus
 		}
 
 		// Token: 0x06000010 RID: 16
-		public static void DoingTheThing1(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 0);
-			DoYourThing.TheAdditionalStuff(str, 0);
-		}
 
 		// Token: 0x06000011 RID: 17
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
@@ -529,102 +426,6 @@ namespace NotesPlus
 		}
 
 		// Token: 0x06000012 RID: 18
-		public static void DoingTheThing2(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 1);
-			DoYourThing.TheAdditionalStuff(str, 1);
-		}
-
-		// Token: 0x06000013 RID: 19
-		public static void DoingTheThing15(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 14);
-			DoYourThing.TheAdditionalStuff(str, 14);
-		}
-
-		// Token: 0x06000014 RID: 20
-		public static void DoingTheThing14(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 13);
-			DoYourThing.TheAdditionalStuff(str, 13);
-		}
-
-		// Token: 0x06000015 RID: 21
-		public static void DoingTheThing13(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 12);
-			DoYourThing.TheAdditionalStuff(str, 12);
-		}
-
-		// Token: 0x06000016 RID: 22
-		public static void DoingTheThing12(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 11);
-			DoYourThing.TheAdditionalStuff(str, 11);
-		}
-
-		// Token: 0x06000017 RID: 23
-		public static void DoingTheThing11(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 10);
-			DoYourThing.TheAdditionalStuff(str, 10);
-		}
-
-		// Token: 0x06000018 RID: 24
-		public static void DoingTheThing10(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 9);
-			DoYourThing.TheAdditionalStuff(str, 9);
-		}
-
-		// Token: 0x06000019 RID: 25
-		public static void DoingTheThing9(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 8);
-			DoYourThing.TheAdditionalStuff(str, 8);
-		}
-
-		// Token: 0x0600001A RID: 26
-		public static void DoingTheThing8(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 7);
-			DoYourThing.TheAdditionalStuff(str, 7);
-		}
-
-		// Token: 0x0600001B RID: 27
-		public static void DoingTheThing7(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 6);
-			DoYourThing.TheAdditionalStuff(str, 6);
-		}
-
-		// Token: 0x0600001C RID: 28
-		public static void DoingTheThing6(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 5);
-			DoYourThing.TheAdditionalStuff(str, 5);
-		}
-
-		// Token: 0x0600001D RID: 29
-		public static void DoingTheThing5(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 4);
-			DoYourThing.TheAdditionalStuff(str, 4);
-		}
-
-		// Token: 0x0600001E RID: 30
-		public static void DoingTheThing4(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 3);
-			DoYourThing.TheAdditionalStuff(str, 3);
-		}
-
-		// Token: 0x0600001F RID: 31
-		public static void DoingTheThing3(string str)
-		{
-			DoYourThing.TheGoodStuff(str, 2);
-			DoYourThing.TheAdditionalStuff(str, 2);
-		}
 
 		// Token: 0x06000020 RID: 32
 		public static void TheGoodStuff(string str, int key)
