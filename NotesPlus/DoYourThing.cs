@@ -6,6 +6,7 @@ using Game.Interface;
 using Game.Simulation;
 using HarmonyLib;
 using Home.Common.Tooltips;
+using Home.Shared;
 using Mentions.UI;
 using Server.Shared.Extensions;
 using Server.Shared.Info;
@@ -42,6 +43,50 @@ namespace NotesPlus
                         }
                         input.onValueChanged.AddListener(new UnityAction<string>(DoingTheThing));
                         DoYourThing.CreateNotesLabel(i - 1);
+						if ((bool)Settings.SettingsCache.GetValue("Manual Locking/Unlocking") && Pepper.GetMyPosition() != i - 1)
+						{
+                            BMG_Button lockButton = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(-0.06f, 0.305f), Quaternion.identity, input.transform.parent);
+							RectTransform lockTransform = lockButton.transform as RectTransform;
+							TooltipTrigger tooltip = lockButton.GetComponent<TooltipTrigger>();
+                            tooltip.LookupKey = "";
+                            if (DoYourThing.lockedplayers.ContainsKey(i - 1))
+							{
+								lockButton.DoSpriteSwap(Main.locked);
+								Tuple<Role, FactionType> tuple = DoYourThing.lockedplayers.GetValue(i - 1);
+								tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+                            } else
+							{
+                                lockButton.DoSpriteSwap(Main.unlocked);
+								tooltip.NonLocalizedString = "Lock Role";
+                            }
+							lockTransform.position = new Vector3(-0.06f, lockTransform.parent.GetChild(0).transform.position.y - 0.0265f, 0f);
+							lockTransform.sizeDelta = new Vector2(35f, 35f);
+							lockButton.autoClickDelay = 1f;
+                            lockButton.onClick.RemoveAllListeners();
+							void onClickLock()
+							{
+                                Debug.LogWarning("lock clicked -----------");
+                                if (DoYourThing.lockedplayers.ContainsKey(i - 1))
+								{
+									Debug.LogWarning("unlocking -----------");
+									DoYourThing.lockedplayers.Remove(i - 1);
+                                    Debug.LogWarning("removed -----------");
+                                    lockButton.DoSpriteSwap(Main.unlocked);
+                                    Debug.LogWarning("change sprite -----------");
+                                    tooltip.NonLocalizedString = "Lock Role";
+                                } else if (DoYourThing.ourknown.Get().ContainsKey(i - 1))
+								{
+                                    Debug.LogWarning("locking -----------");
+                                    Tuple<Role, FactionType> tuple = DoYourThing.ourknown.Get().GetValue(i - 1, null);
+                                    DoYourThing.lockedplayers.SetValue(i - 1, tuple);
+                                    Debug.LogWarning("locked -----------");
+                                    lockButton.DoSpriteSwap(Main.locked);
+                                    Debug.LogWarning("lchange sprite -----------");
+                                    tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+                                }
+							}
+							lockButton.onClick.AddListener(new UnityAction(onClickLock));
+                        }
                         DoYourThing.alreadydone.Add(i);
                     }
                 }
@@ -49,6 +94,51 @@ namespace NotesPlus
                 {
                     current = 16;
                 }
+            }
+        }
+		public static void SharedHandleNPlus()
+		{
+            GameObject gameObject;
+            if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
+            {
+                gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+            }
+            else
+            {
+                gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
+            }
+            if (DoYourThing.notepad && gameObject)
+            {
+                DoYourThing.JANCanCode = true;
+                DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
+                DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
+                DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
+                DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
+                DoYourThing.PlayerNotesCopyToClipboard = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
+                DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
+                DoYourThing.PlayerNotesCopyToClipboard.transform.localPosition = new Vector3(150f, -365f, 0f);
+                DoYourThing.PlayerNotesCopyToClipboard.DoSpriteSwap(Main.copyToClipboard);
+                try
+                {
+                    TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
+                    if (component != null)
+                    {
+                        component.LookupKey = "";
+                        component.NonLocalizedString = "Send Player Notes to Chat";
+                    }
+                    TooltipTrigger component2 = DoYourThing.PlayerNotesCopyToClipboard.GetComponent<TooltipTrigger>();
+                    if (component2 != null)
+                    {
+                        component2.LookupKey = "";
+                        component2.NonLocalizedString = "Copy to Clipboard";
+                    }
+                }
+                catch
+                {
+                }
+                DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
+                DoYourThing.PlayerNotesCopyToClipboard.onClick.AddListener(new UnityAction(DoYourThing.OnCopyToClipboard));
+                return;
             }
         }
 		public static BMG_InputField GetInput(int num)
@@ -78,7 +168,6 @@ namespace NotesPlus
 				DoYourThing.inputHolder = null;
 				DoYourThing.JANCanCode = false;
 				DoYourThing.alreadydone = new List<int>();
-				DoYourThing.HandleInputFields();
                 DoYourThing.ourknown = new StateProperty<Dictionary<int, Tuple<Role, FactionType>>>(new Dictionary<int, Tuple<Role, FactionType>>());
 				DoYourThing.lockedplayers = new Dictionary<int, Tuple<Role, FactionType>>();
 				foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair in Service.Game.Sim.simulation.knownRolesAndFactions.Get())
@@ -89,53 +178,11 @@ namespace NotesPlus
 				StateProperty<Dictionary<int, Tuple<Role, FactionType>>> knownRolesAndFactions = Service.Game.Sim.simulation.knownRolesAndFactions;
 				knownRolesAndFactions.OnChanged = (Action<Dictionary<int, Tuple<Role, FactionType>>>)Delegate.Combine(knownRolesAndFactions.OnChanged, new Action<Dictionary<int, Tuple<Role, FactionType>>>(DoYourThing.DetectChanges));
 				DoYourThing.notepad = UnityEngine.Object.FindAnyObjectByType<NotepadPanel>();
-				GameObject gameObject;
-				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills"))
-				{
-					gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
-				}
-				else
-				{
-					gameObject = GameObject.Find("Hud/NotepadElementsUI(Clone)/MainPanel/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
-				}
-				if (DoYourThing.notepad && gameObject)
-				{
-					DoYourThing.JANCanCode = true;
-					DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
-					DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
-					DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
-					DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
-					DoYourThing.PlayerNotesCopyToClipboard = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject.transform);
-					DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
-					DoYourThing.PlayerNotesCopyToClipboard.transform.localPosition = new Vector3(150f, -365f, 0f);
-					Texture2D clipboardsprite = Main.Textures["copy-icon"];
-					DoYourThing.PlayerNotesCopyToClipboard.DoSpriteSwap(Sprite.Create(clipboardsprite, new Rect(0f, 0f, (float)clipboardsprite.width, (float)clipboardsprite.height), new Vector2(DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.x / (float)clipboardsprite.width, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.y / (float)clipboardsprite.height), DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pixelsPerUnit, 0U, SpriteMeshType.Tight, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.border));
-					try
-					{
-						TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
-						if (component != null)
-						{
-							component.LookupKey = "";
-							component.NonLocalizedString = "Send Player Notes to Chat";
-						}
-						TooltipTrigger component2 = DoYourThing.PlayerNotesCopyToClipboard.GetComponent<TooltipTrigger>();
-						if (component2 != null)
-						{
-							component2.LookupKey = "";
-							component2.NonLocalizedString = "Copy to Clipboard";
-						}
-					}
-					catch
-					{
-					}
-					DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
-					DoYourThing.PlayerNotesCopyToClipboard.onClick.AddListener(new UnityAction(DoYourThing.OnCopyToClipboard));
-					return;
-				}
-			}
+				DoYourThing.SharedHandleNPlus();
+                DoYourThing.HandleInputFields();
+            }
 			else if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DISCUSSION)
 			{
-                DoYourThing.HandleInputFields();
                 foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair2 in DoYourThing.lockedplayers)
 				{
 					try
@@ -154,44 +201,11 @@ namespace NotesPlus
 					{
 					}
 				}
-				if (ModStates.IsEnabled("JAN.movablewills") && ModSettings.GetBool("Player Notes Standalone", "JAN.movablewills") && !DoYourThing.JANCanCode)
+				if (!DoYourThing.JANCanCode)
 				{
-					GameObject gameObject3 = GameObject.Find("Hud/NotepadElementsUI(Clone)/asd/NotepadCommonElements/Background/ScaledBackground/PlayerNoteBackground");
-					if (DoYourThing.notepad && gameObject3)
-					{
-						DoYourThing.JANCanCode = true;
-						DoYourThing.mentionsPanel = DoYourThing.notepad.mentionsPanel;
-						DoYourThing.PlayerNotesSendToChat = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.notepad.SendToChatButton, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject3.transform);
-						DoYourThing.PlayerNotesSendToChat.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
-						DoYourThing.PlayerNotesSendToChat.onClick.RemoveAllListeners();
-						DoYourThing.PlayerNotesCopyToClipboard = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(0.3f, -0.5f), Quaternion.identity, gameObject3.transform);
-						DoYourThing.PlayerNotesSendToChat.transform.localPosition = new Vector3(220f, -365f, 0f);
-						DoYourThing.PlayerNotesCopyToClipboard.transform.localPosition = new Vector3(150f, -365f, 0f);
-						Texture2D clipboardsprite = Main.Textures["copy-icon"];
-						DoYourThing.PlayerNotesCopyToClipboard.DoSpriteSwap(Sprite.Create(clipboardsprite, new Rect(0f, 0f, (float)clipboardsprite.width, (float)clipboardsprite.height), new Vector2(DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.x / (float)clipboardsprite.width, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pivot.y / (float)clipboardsprite.height), DoYourThing.PlayerNotesCopyToClipboard.image.sprite.pixelsPerUnit, 0U, SpriteMeshType.Tight, DoYourThing.PlayerNotesCopyToClipboard.image.sprite.border));
-						try
-						{
-							TooltipTrigger component = DoYourThing.PlayerNotesSendToChat.GetComponent<TooltipTrigger>();
-							if (component != null)
-							{
-								component.LookupKey = "";
-								component.NonLocalizedString = "Send Player Notes to Chat";
-							}
-							TooltipTrigger component2 = DoYourThing.PlayerNotesCopyToClipboard.GetComponent<TooltipTrigger>();
-							if (component2 != null)
-							{
-								component2.LookupKey = "";
-								component2.NonLocalizedString = "Copy to Clipboard";
-							}
-						}
-						catch
-						{
-						}
-						DoYourThing.PlayerNotesSendToChat.onClick.AddListener(new UnityAction(DoYourThing.OnSendToChat));
-						DoYourThing.PlayerNotesCopyToClipboard.onClick.AddListener(new UnityAction(DoYourThing.OnCopyToClipboard));
-						return;
-					}
-				}
+					DoYourThing.SharedHandleNPlus();
+                    DoYourThing.HandleInputFields();
+                }
 			}
 		}
 

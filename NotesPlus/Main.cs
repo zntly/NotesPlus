@@ -15,16 +15,11 @@ namespace NotesPlus
 		public void Start()
 		{
 			Console.WriteLine("anyone can be an enchanter if they try hard enough");
-			AssetBundle assetBundleFromResources = FromAssetBundle.GetAssetBundleFromResources("NotesPlus.resources.assetbundles.notes.plus", Assembly.GetExecutingAssembly());
-			assetBundleFromResources.LoadAllAssets<Texture2D>().ForEach(delegate (Texture2D s)
-			{
-				Main.Textures.Add(s.name, s);
-			});
-			if (assetBundleFromResources != null)
-			{
-				assetBundleFromResources.Unload(false);
-			}
-			try
+			Assembly thisAssembly = Assembly.GetExecutingAssembly();
+			copyToClipboard = FromResources.LoadSprite("NotesPlus.resources.images.CopyToClipboard.png", thisAssembly);
+            locked = FromResources.LoadSprite("NotesPlus.resources.images.Locked.png", thisAssembly);
+            unlocked = FromResources.LoadSprite("NotesPlus.resources.images.Lock.png", thisAssembly);
+            try
 			{
 				bool @bool = ModSettings.GetBool("Traitor Detections", "synapsium.notes.plus");
 				if (!ModSettings.GetBool("Did Update Traitor Detections", "synapsium.notes.plus"))
@@ -47,12 +42,15 @@ namespace NotesPlus
                 Settings.SettingsCache.SetValue("Additional Notes Style", ModSettings.GetString("Additional Notes Style", "synapsium.notes.plus"));
 				Settings.SettingsCache.SetValue("Copy to Clipboard Mode", ModSettings.GetString("Copy to Clipboard Mode", "synapsium.notes.plus"));
 				Settings.SettingsCache.SetValue("Additional Notes Color", ModSettings.GetColor("Additional Notes Color", "synapsium.notes.plus"));
-			} catch
+                Settings.SettingsCache.SetValue("Manual Locking/Unlocking", ModSettings.GetBool("Manual Locking/Unlocking", "synapsium.notes.plus"));
+            } catch
             {
 				Console.WriteLine("damn your plague is so strong you gave the mod a bug, contact synapsium");
 			}
 		}
 
-		public static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
+		public static Sprite copyToClipboard;
+		public static Sprite locked;
+		public static Sprite unlocked;
 	}
 }

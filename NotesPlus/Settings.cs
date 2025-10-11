@@ -122,6 +122,24 @@ namespace NotesPlus
 				};
 			}
 		}
+        public ModSettings.CheckboxSetting LockUnlock
+        {
+            get
+            {
+				return new ModSettings.CheckboxSetting
+				{
+					Name = "Manual Locking/Unlocking",
+					Description = "Adds a lock button next to each player's (except yours) name that lets you manually lock or unlock their role. Not recommended due to the risk of overwriting important information",
+					DefaultValue = false,
+					AvailableInGame = false,
+					Available = true,
+					OnChanged = delegate (bool s)
+					{
+						Settings.SettingsCache.SetValue("Manual Locking/Unlocking", s);
+					}
+				};
+            }
+        }
         // Token: 0x17000004 RID: 4
         // (get) Token: 0x06000006 RID: 6 RVA: 0x000020F3 File Offset: 0x000002F3
         public ModSettings.ColorPickerSetting AdditionalNotesColor
@@ -231,6 +249,10 @@ namespace NotesPlus
 				"Additional Notes",
 				true
 			},
+            {
+                "Manual Locking/Unlocking",
+                true
+            },
             {
 				"Additional Notes Style",
 				"[Note]"

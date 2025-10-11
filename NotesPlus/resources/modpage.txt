@@ -18,6 +18,8 @@
 
 <indent=7%><b>Additional Notes Color:</b> Determines the color of additional notes.</indent>
 
+<indent=7%><b>Manual Locking/Unlocking:</b> Adds a lock button next to each player's (except yours) name that lets you manually lock or unlock their role.</indent>
+
 <indent=7%><b>Additional Notes Style:</b> Accessible mid-game. Determines how additional notes will look on the playerlist. You still input additional notes with [single brackets], this only changes how it looks on the playerlist.</indent>
 
 <indent=7%><b>Copy to Clipboard Mode:</b> Accessible mid-game. Determines how each player is separated when copying Player Notes to the clipboard.</indent>
@@ -26,6 +28,7 @@
 If a role is revealed by the game, such as by Admirer proposal, PM/Witch reveal, Mayor/Marsh/Pros reveal, teammates/yourself, etc. it will be locked.
 You cannot change what role shows in the playerlist when the role is locked, but you can change the faction.
 Using a manual override (use any role id, only faction id is checked) or with Faction Abbreviations, you can change the shown faction of a locked role.
+If the <b>Manual Locking/Unlocking</b> setting is enabled, a lock button will appear next to each player's name (except yours) that allows you to manually lock and unlock roles. This is not recommended as there is a possibility you overwrite important information (such as a PM reveal or your own teammates) with this, but the option <i>is there</i>.
 
 This mod adds a Send to Chat and a Copy to Clipboard button to your Player Notes. They do exactly what you should expect them to do.
 
