@@ -46,6 +46,7 @@ namespace NotesPlus
 						if ((bool)Settings.SettingsCache.GetValue("Manual Locking/Unlocking") && Pepper.GetMyPosition() != i - 1)
 						{
                             BMG_Button lockButton = UnityEngine.Object.Instantiate<BMG_Button>(DoYourThing.PlayerNotesSendToChat, new Vector2(-0.06f, 0.305f), Quaternion.identity, input.transform.parent);
+							DoYourThing.lockButtons.SetValue(i - 1, lockButton);
 							RectTransform lockTransform = lockButton.transform as RectTransform;
 							TooltipTrigger tooltip = lockButton.GetComponent<TooltipTrigger>();
                             tooltip.LookupKey = "";
@@ -65,23 +66,16 @@ namespace NotesPlus
                             lockButton.onClick.RemoveAllListeners();
 							void onClickLock()
 							{
-                                Debug.LogWarning("lock clicked -----------");
                                 if (DoYourThing.lockedplayers.ContainsKey(i - 1))
 								{
-									Debug.LogWarning("unlocking -----------");
 									DoYourThing.lockedplayers.Remove(i - 1);
-                                    Debug.LogWarning("removed -----------");
                                     lockButton.DoSpriteSwap(Main.unlocked);
-                                    Debug.LogWarning("change sprite -----------");
                                     tooltip.NonLocalizedString = "Lock Role";
                                 } else if (DoYourThing.ourknown.Get().ContainsKey(i - 1))
 								{
-                                    Debug.LogWarning("locking -----------");
                                     Tuple<Role, FactionType> tuple = DoYourThing.ourknown.Get().GetValue(i - 1, null);
                                     DoYourThing.lockedplayers.SetValue(i - 1, tuple);
-                                    Debug.LogWarning("locked -----------");
                                     lockButton.DoSpriteSwap(Main.locked);
-                                    Debug.LogWarning("lchange sprite -----------");
                                     tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
                                 }
 							}
@@ -170,7 +164,8 @@ namespace NotesPlus
 				DoYourThing.alreadydone = new List<int>();
                 DoYourThing.ourknown = new StateProperty<Dictionary<int, Tuple<Role, FactionType>>>(new Dictionary<int, Tuple<Role, FactionType>>());
 				DoYourThing.lockedplayers = new Dictionary<int, Tuple<Role, FactionType>>();
-				foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair in Service.Game.Sim.simulation.knownRolesAndFactions.Get())
+                DoYourThing.lockButtons = new Dictionary<int, BMG_Button>();
+                foreach (KeyValuePair<int, Tuple<Role, FactionType>> keyValuePair in Service.Game.Sim.simulation.knownRolesAndFactions.Get())
 				{
 					DoYourThing.ourknown.Get().SetValue(keyValuePair.Key, keyValuePair.Value);
 					DoYourThing.lockedplayers.TryAdd(keyValuePair.Key, keyValuePair.Value);
@@ -217,18 +212,25 @@ namespace NotesPlus
 				try
 				{
 					if ((!DoYourThing.ourknown.Get().ContainsKey(i) && Service.Game.Sim.simulation.knownRolesAndFactions.Get().ContainsKey(i)) || (Service.Game.Sim.simulation.knownRolesAndFactions.Get().ContainsKey(i) && DoYourThing.ourknown.Get().ContainsKey(i) && (Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item1 != DoYourThing.ourknown.Get().GetValue(i, null).Item1 || Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null).Item2 != DoYourThing.ourknown.Get().GetValue(i, null).Item2)))
-					{
-						DoYourThing.lockedplayers.SetValue(i, Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null));
+					{ 
+						Tuple<Role, FactionType> tuple = Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null);
+                        DoYourThing.lockedplayers.SetValue(i, tuple);
 						try
 						{
+							BMG_Button lockButton = DoYourThing.lockButtons.GetValue(i);
+                            TooltipTrigger tooltip = lockButton.GetComponent<TooltipTrigger>();
+                            if (lockButton)
+							{
+                                lockButton.DoSpriteSwap(Main.locked);
+                                tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+                            }
 							GameObject gameObject = DoYourThing.playerList.transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
-								Tuple<Role, FactionType> tiemp = Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(i, null);
 								float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
 								float maxsize = multi == 1f ? 9999f : 150f;
-								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(tiemp.Item1, tiemp.Item2) + ")").x * multi, maxsize);
+								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + ")").x * multi, maxsize);
 								component.sizeDelta = new Vector2(x, 30f);
 							}
 						}
@@ -950,6 +952,8 @@ namespace NotesPlus
 
 		// Token: 0x04000003 RID: 3
 		public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
+
+		public static Dictionary<int, BMG_Button> lockButtons;
 
 		// Token: 0x04000004 RID: 4
 		public static Regex RoleRegex = new Regex("\\[\\[#\\d+]]|\\[\\[#\\d+,\\d+]]|<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
