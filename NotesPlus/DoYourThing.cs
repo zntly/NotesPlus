@@ -20,11 +20,9 @@ using UnityEngine.Events;
 
 namespace NotesPlus
 {
-	// Token: 0x02000005 RID: 5
 	[HarmonyPatch(typeof(GameSimulation), "HandleOnGameInfoChanged")]
 	public class DoYourThing
 	{
-		// Token: 0x0600000C RID: 12
 		public static void HandleInputFields()
 		{
             for (int current = 1; current < 16; current++)
@@ -54,7 +52,7 @@ namespace NotesPlus
 							{
 								lockButton.DoSpriteSwap(Main.locked);
 								Tuple<Role, FactionType> tuple = DoYourThing.lockedplayers.GetValue(i - 1);
-								tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+								tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "$" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
                             } else
 							{
                                 lockButton.DoSpriteSwap(Main.unlocked);
@@ -76,7 +74,7 @@ namespace NotesPlus
                                     Tuple<Role, FactionType> tuple = DoYourThing.ourknown.Get().GetValue(i - 1, null);
                                     DoYourThing.lockedplayers.SetValue(i - 1, tuple);
                                     lockButton.DoSpriteSwap(Main.locked);
-                                    tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+                                    tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "$" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
                                 }
 							}
 							lockButton.onClick.AddListener(new UnityAction(onClickLock));
@@ -152,7 +150,6 @@ namespace NotesPlus
 			return DoYourThing.inputHolder.transform.GetChild(num).gameObject.GetComponentInChildren<BMG_InputField>();
 		}
 
-		// Token: 0x0600000D RID: 13
 		[HarmonyPostfix]
 		public static void Postfix(GameInfo gameInfo)
 		{
@@ -203,8 +200,6 @@ namespace NotesPlus
                 }
 			}
 		}
-
-		// Token: 0x0600000E RID: 14
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)
 		{
 			for (int i = 0; i < 15; i++)
@@ -222,7 +217,7 @@ namespace NotesPlus
                             if (lockButton)
 							{
                                 lockButton.DoSpriteSwap(Main.locked);
-                                tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "/" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+                                tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "$" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
                             }
 							GameObject gameObject = DoYourThing.playerList.transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
@@ -245,11 +240,6 @@ namespace NotesPlus
 				}
 			}
 		}
-
-
-		// Token: 0x06000010 RID: 16
-
-		// Token: 0x06000011 RID: 17
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
 		{
 			string a = align.ToLower();
@@ -288,9 +278,6 @@ namespace NotesPlus
             }
             return theFaction;
         }
-        // Token: 0x06000012 RID: 18
-
-        // Token: 0x06000020 RID: 32
         public static void TheGoodStuff(string str, int key)
 		{
 			Tuple<Role, FactionType> tuple;
@@ -526,8 +513,6 @@ namespace NotesPlus
 				}
 			}
 		}
-
-		// Token: 0x06000021 RID: 33
 		public static void OnSendToChat()
 		{
 			string text = "";
@@ -609,8 +594,6 @@ namespace NotesPlus
 			}
 			BMG_Clipboard.Clipboard = text;
 		}
-
-		// Token: 0x06000022 RID: 34
 		public static FactionType TraitorFaction(string str)
 		{
 			string a = str.ToLower();
@@ -637,8 +620,6 @@ namespace NotesPlus
 			}
 			return theFaction;
 		}
-
-		// Token: 0x06000023 RID: 35
 		public static void DisableRoleLabel(int num)
 		{
 			try
@@ -649,14 +630,10 @@ namespace NotesPlus
 			{
 			}
 		}
-
-		// Token: 0x06000024 RID: 36
 		public static GameObject GetNotesLabel(int num)
 		{
 			return DoYourThing.playerList.transform.GetChild(num + 1).Find("LayoutGroup").Find("NotesPlusLabel").gameObject;
 		}
-
-		// Token: 0x06000025 RID: 37
 		public static void CreateNotesLabel(int num)
 		{
 			GameObject gameObject = DoYourThing.playerList.transform.GetChild(num + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
@@ -675,8 +652,6 @@ namespace NotesPlus
 				gameObject2.transform.SetSiblingIndex(gameObject.transform.GetSiblingIndex() + 1);
 			}
 		}
-
-		// Token: 0x06000026 RID: 38
 		public static void TheAdditionalStuff(string str, int key)
 		{
 			if ((bool)Settings.SettingsCache.GetValue("Additional Notes"))
@@ -693,8 +668,6 @@ namespace NotesPlus
 				}
 			}
 		}
-
-		// Token: 0x06000027 RID: 39
 		public static string GetAdditionalNoteText(string str, string colorhex)
 		{
 			string @string = (string)Settings.SettingsCache.GetValue("Additional Notes Style");
@@ -772,18 +745,14 @@ namespace NotesPlus
             factions += ")";
             DoYourThing.TraitorRegex = new Regex("(?<=^|\\s|\\*)" + factions + "(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
         }
-        // Token: 0x04000003 RID: 3
         public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
 
 		public static Dictionary<int, BMG_Button> lockButtons;
 
-        // Token: 0x04000004 RID: 4
         public static Regex RoleRegex = new Regex("\\[\\[#\\d+]]|\\[\\[#\\d+,\\d+]]|<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
 
-		// Token: 0x04000005 RID: 5
 		public static Regex RoleIdRegex = new Regex("\\d+");
 
-		// Token: 0x04000006 RID: 6
 		public static Regex FactionIdRegex = new Regex("(?<=,)\\d+");
 
 		public static Dictionary<Tuple<Role, Role>, List<string>> AlignmentAbbreviationStrings = new Dictionary<Tuple<Role, Role>, List<string>>()
@@ -1123,39 +1092,28 @@ namespace NotesPlus
 				GetAbbreviationListOfRoleTuple(Role.NEUTRAL_APOCALYPSE, Btos2Role.RandomApocalypse), FactionType.APOCALYPSE
 			},
 		};
-		// Token: 0x04000007 RID: 7
 		public static Regex AlignmentRegex;
 
-        // Token: 0x04000009 RID: 9
         public static BMG_Button PlayerNotesSendToChat;
 
 		public static BMG_Button PlayerNotesCopyToClipboard;
 
-		// Token: 0x0400000A RID: 10
 		public static MentionPanel mentionsPanel;
 
-		// Token: 0x0400000B RID: 11
 		public static NotepadPanel notepad;
 
-		// Token: 0x0400000C RID: 12
 		public static Regex PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 
-		// Token: 0x0400000D RID: 13
 		public static Regex LinkRoleRegex = new Regex("<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
 
-		// Token: 0x0400000E RID: 14
 		public static List<int> alreadydone;
 
-		// Token: 0x0400000F RID: 15
 		public static Regex TraitorRegex;
 
-		// Token: 0x04000010 RID: 16
 		public static bool JANCanCode = false;
 
-		// Token: 0x04000011 RID: 17
 		public static Dictionary<int, Tuple<Role, FactionType>> lockedplayers;
 
-		// Token: 0x04000012 RID: 18
 		public static Regex AdditionalNotesRegex = new Regex("(?<=(?<!\\[)\\[)[^\\[\\]]*(?=\\](?!\\]))");
 
 		public static GameObject playerList;
