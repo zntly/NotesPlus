@@ -42,13 +42,13 @@ namespace NotesPlus
 		// Token: 0x0600002B RID: 43
 		public static bool IsPandora()
 		{
-			return Utils.IsBTOS2() && Service.Game.Sim.simulation.roleDeckBuilder.Data.modifierCards.Contains((Role)222);
+			return Utils.IsBTOS2() && Service.Game.Sim.simulation.roleDeckBuilder.Data.modifierCards.Contains(Btos2Role.PandorasBox);
 		}
 
 		// Token: 0x0600002C RID: 44
 		public static bool IsCompliance()
 		{
-			return Utils.IsBTOS2() && Service.Game.Sim.simulation.roleDeckBuilder.Data.modifierCards.Contains((Role)221);
+			return Utils.IsBTOS2() && Service.Game.Sim.simulation.roleDeckBuilder.Data.modifierCards.Contains(Btos2Role.CompliantKillers);
 		}
 
 		// Token: 0x0600002D RID: 45
@@ -60,7 +60,7 @@ namespace NotesPlus
 		// Token: 0x0600002E RID: 46
 		public static bool IsATT()
 		{
-			return Utils.IsBTOS2() && Service.Game.Sim.simulation.roleDeckBuilder.Data.modifierCards.Contains(Role.FOUR_HORSEMEN);
+			return Utils.IsBTOS2() && Service.Game.Sim.simulation.roleDeckBuilder.Data.modifierCards.Contains(Btos2Role.ApocTownTraitor);
 		}
 
 		// Token: 0x0600003F RID: 63

@@ -246,16 +246,6 @@ namespace NotesPlus
 			}
 		}
 
-		// Token: 0x0600000F RID: 15
-		static DoYourThing()
-		{
-			DoYourThing.JANCanCode = false;
-			DoYourThing.RoleIdRegex = new Regex("\\d+");
-			DoYourThing.FactionIdRegex = new Regex("(?<=,)\\d+");
-			DoYourThing.AlignmentRegex = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tpow|tpower|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cc|cov|coven|rn|neut|neutral)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
-			DoYourThing.AlignmentRegexBTOS = new Regex("(?<=^|\\s|\\*)(ti|tp|tk|ts|tg|tgov|te|texe|ck|cp|cpow|cpower|cd|cu|ne|nk|na|ra|apoc|apocalypse|horseman|horsemen|rt|ct|town|townie|rc|cov|cc|coven|rn|neut|neutral|np|ns|no|nout|nspec|pariah)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
-			DoYourThing.PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
-		}
 
 		// Token: 0x06000010 RID: 16
 
@@ -263,188 +253,45 @@ namespace NotesPlus
 		public static Tuple<Role, FactionType> AlignmentToFaction(string align)
 		{
 			string a = align.ToLower();
-			if (!Utils.IsBTOS2())
+			bool isBtos = Utils.IsBTOS2();
+			Role theRole = Role.UNKNOWN;
+			FactionType theFaction = FactionType.UNKNOWN;
+			foreach (KeyValuePair<List<string>, FactionType> kvp in AlignmentToFactionStrings)
+				if (kvp.Key.Contains(a))
+				{
+					theRole = GetRoleOfAbbreviationList(kvp.Key, isBtos);
+					theFaction = kvp.Value;
+				}
+			if (isBtos)
 			{
-				if (a == "ti")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_INVESTIGATIVE, FactionType.TOWN);
-				}
-				if (a == "tp")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_PROTECTIVE, FactionType.TOWN);
-				}
-				if (a == "ts")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_SUPPORT, FactionType.TOWN);
-				}
-				if (a == "tpow" || a == "tpower")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_POWER, FactionType.TOWN);
-				}
-				if (a == "tk")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_KILLING, FactionType.TOWN);
-				}
-				if (a == "rt" || a == "town" || a == "townie")
-				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_TOWN, FactionType.TOWN);
-				}
-				if (a == "ct")
-				{
-					return new Tuple<Role, FactionType>(Role.COMMON_TOWN, FactionType.TOWN);
-				}
-				if (a == "cd")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, FactionType.COVEN);
-				}
-				if (a == "ck")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_KILLING, FactionType.COVEN);
-				}
-				if (a == "cp" || a == "cpow" || a == "cpower")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_POWER, FactionType.COVEN);
-				}
-				if (a == "cu")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_UTILITY, FactionType.COVEN);
-				}
-				if (a == "rc" || a == "cov" || a == "coven")
-				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_COVEN, FactionType.COVEN);
-				}
-				if (a == "cc")
-				{
-					return new Tuple<Role, FactionType>(Role.COMMON_COVEN, FactionType.COVEN);
-				}
-				if (a == "ne")
-				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, FactionType.NONE);
-				}
-				if (a == "nk")
-				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, FactionType.NONE);
-				}
-				if (a == "rn" || a == "neut" || a == "neutral")
-				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, FactionType.NONE);
-				}
-				if (a == "na" || a == "ra" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")
-				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, FactionType.APOCALYPSE);
-				}
-				if (a == "np" || a == "pariah")
-				{
-					return new Tuple<Role, FactionType>((Role)119, FactionType.NONE);
-				}
+				if (Utils.IsPandora() && (theFaction == FactionType.COVEN || theFaction == FactionType.APOCALYPSE))
+					theFaction = Btos2Faction.Pandora;
+				if (Utils.IsCompliance() && theRole == Btos2Role.NeutralKilling)
+					theFaction = Btos2Faction.Compliance;
 			}
-			else
-			{
-				if (a == "ti")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_KILLING, FactionType.TOWN);
-				}
-				if (a == "tp")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_SUPPORT, FactionType.TOWN);
-				}
-				if (a == "ts")
-				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_COVEN, FactionType.TOWN);
-				}
-				if (a == "tg" || a == "tgov")
-				{
-					return new Tuple<Role, FactionType>((Role)120, FactionType.TOWN);
-				}
-                if (a == "te" || a == "texe")
-                {
-                    return new Tuple<Role, FactionType>((Role)119, FactionType.TOWN);
-                }
-                if (a == "tk")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_POWER, FactionType.TOWN);
-				}
-				if (a == "rt" || a == "town" || a == "townie")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_INVESTIGATIVE, FactionType.TOWN);
-				}
-				if (a == "ct")
-				{
-					return new Tuple<Role, FactionType>(Role.TOWN_PROTECTIVE, FactionType.TOWN);
-				}
-                bool flag = Utils.IsPandora();
-				FactionType item = FactionType.COVEN;
-				if (flag)
-				{
-					item = (FactionType)43;
-				}
-				if (a == "cd")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_DECEPTION, item);
-				}
-				if (a == "ck")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_POWER, item);
-				}
-				if (a == "cp" || a == "cpow" || a == "cpower")
-				{
-					return new Tuple<Role, FactionType>(Role.RANDOM_NEUTRAL, item);
-				}
-				if (a == "cu")
-				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_KILLING, item);
-				}
-				if (a == "rc" || a == "cov" || a == "coven")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_KILLING, item);
-				}
-				if (a == "cc")
-				{
-					return new Tuple<Role, FactionType>(Role.COVEN_UTILITY, item);
-				}
-				if (a == "ne")
-				{
-					return new Tuple<Role, FactionType>(Role.ANY, FactionType.NONE);
-				}
-				bool flag2 = Utils.IsCompliance();
-				FactionType item2 = FactionType.NONE;
-				if (flag2)
-				{
-					item2 = (FactionType)44;
-				}
-				if (a == "nk")
-				{
-					return new Tuple<Role, FactionType>(Role.COMMON_TOWN, item2);
-				}
-				if (a == "rn" || a == "neut" || a == "neutral")
-				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_APOCALYPSE, FactionType.NONE);
-				}
-				FactionType item3 = FactionType.APOCALYPSE;
-				if (flag)
-				{
-					item3 = (FactionType)43;
-				}
-				if (a == "na" || a == "ra" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")
-				{
-					return new Tuple<Role, FactionType>(Role.NEUTRAL_EVIL, item3);
-				}
-				if (a == "np" || a == "pariah")
-				{
-					return new Tuple<Role, FactionType>(Role.COMMON_COVEN, FactionType.NONE);
-				}
-                if (a == "ns" || a == "nspec" || a == "no" || a == "nout")
-                {
-                    return new Tuple<Role, FactionType>((Role)118, FactionType.NONE);
-                }
-            }
-			return new Tuple<Role, FactionType>(Role.NONE, FactionType.NONE);
+			return new Tuple<Role, FactionType>(theRole, theFaction);
 		}
+        public static FactionType AlignmentToFaction(Role role)
+        {
+            bool isBtos = Utils.IsBTOS2();
+            FactionType theFaction = FactionType.UNKNOWN;
+			List<string> abbreviationList = GetAbbreviationListOfRole(role, isBtos);
+            foreach (KeyValuePair<List<string>, FactionType> kvp in AlignmentToFactionStrings)
+                if (kvp.Key == abbreviationList)
+                    theFaction = kvp.Value;
+            if (isBtos)
+            {
+                if (Utils.IsPandora() && (theFaction == FactionType.COVEN || theFaction == FactionType.APOCALYPSE))
+                    theFaction = Btos2Faction.Pandora;
+                if (Utils.IsCompliance() && role == Btos2Role.NeutralKilling)
+                    theFaction = Btos2Faction.Compliance;
+            }
+            return theFaction;
+        }
+        // Token: 0x06000012 RID: 18
 
-		// Token: 0x06000012 RID: 18
-
-		// Token: 0x06000020 RID: 32
-		public static void TheGoodStuff(string str, int key)
+        // Token: 0x06000020 RID: 32
+        public static void TheGoodStuff(string str, int key)
 		{
 			Tuple<Role, FactionType> tuple;
 			if ((bool)Settings.SettingsCache.GetValue("Additional Notes"))
@@ -482,35 +329,19 @@ namespace NotesPlus
 							}
 							if (!flag2 && (string)Settings.SettingsCache.GetValue("Show Faction Color") != "Only On Override")
 							{
-								if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_TOWN && role <= Role.TOWN_POWER) || role == Role.COMMON_TOWN)) || (Utils.IsBTOS2() && (role >= Role.TOWN_INVESTIGATIVE && role <= Role.RANDOM_COVEN) || role == (Role)119 || role == (Role)120))
-								{
-									factionType = FactionType.TOWN;
-								}
-								else if ((!Utils.IsBTOS2() && ((role >= Role.RANDOM_COVEN && role <= Role.COVEN_POWER) || role == Role.COMMON_COVEN)) || (Utils.IsBTOS2() && role >= Role.COVEN_KILLING && role <= Role.NEUTRAL_KILLING))
-								{
-									factionType = FactionType.COVEN;
-								}
-                                else if ((Utils.IsBTOS2() && role == Role.NEUTRAL_EVIL) || (!Utils.IsBTOS2() && role == Role.NEUTRAL_APOCALYPSE))
-                                {
-                                    factionType = FactionType.APOCALYPSE;
-                                }
-                                else if (role >= Role.RANDOM_TOWN && role < (Role)200)
-								{
-									factionType = FactionType.NONE;
-								}
+								if (role >= Role.RANDOM_TOWN && role < (Role)200)
+									factionType = DoYourThing.AlignmentToFaction(role);
 								else
-								{
 									factionType = role.GetFaction();
-								}
 								if (Utils.IsBTOS2())
 								{
 									if ((factionType == FactionType.COVEN || factionType == FactionType.APOCALYPSE) && Utils.IsPandora())
 									{
-										factionType = (FactionType)43;
+										factionType = Btos2Faction.Pandora;
 									}
-									else if ((role == Role.COMMON_TOWN || factionType == FactionType.SERIALKILLER || factionType == FactionType.ARSONIST || factionType == FactionType.WEREWOLF || factionType == FactionType.SHROUD) && Utils.IsCompliance())
+									else if (factionType >= FactionType.SERIALKILLER && factionType <= FactionType.SHROUD && Utils.IsCompliance())
 									{
-										factionType = (FactionType)44;
+										factionType = Btos2Faction.Compliance;
 									}
 								}
 							}
@@ -546,22 +377,14 @@ namespace NotesPlus
 				}
 				else if ((bool)Settings.SettingsCache.GetValue("Alignment Abbreviations"))
 				{
-					Match match4;
-					if (Utils.IsBTOS2())
+					Match match4 = DoYourThing.AlignmentRegex.Match(str);
+                    if (match4.Success)
 					{
-						match4 = DoYourThing.AlignmentRegexBTOS.Match(str);
-					}
-					else
-					{
-						match4 = DoYourThing.AlignmentRegex.Match(str);
-					}
-					if (match4.Success)
-					{
-						flag = true;
 						Tuple<Role, FactionType> tuple2 = DoYourThing.AlignmentToFaction(match4.Value);
 						Role item = tuple2.Item1;
 						FactionType factionType2 = FactionType.UNKNOWN;
-						if ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Always" || ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only Marked" && str.IndexOf('*') != -1))
+                        flag = true;
+                        if ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Always" || ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only Marked" && str.IndexOf('*') != -1))
 						{
 							bool flag4 = false;
 							if ((bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
@@ -791,89 +614,28 @@ namespace NotesPlus
 		public static FactionType TraitorFaction(string str)
 		{
 			string a = str.ToLower();
+            if (a == "traitor" || a == "tt")
+            {
+                if (Utils.IsPandora())
+                    return Btos2Faction.Pandora;
+                if (Utils.IsCTT())
+                    return FactionType.COVEN;
+                if (Utils.IsATT())
+                    return FactionType.APOCALYPSE;
+                return FactionType.COVEN;
+            }
+            FactionType theFaction = FactionType.UNKNOWN;
+            foreach (KeyValuePair<FactionType, List<string>> kvp in TraitorAbbreviationStrings)
+				if (kvp.Value.Contains(a))
+					theFaction = kvp.Key;
 			if (Utils.IsBTOS2())
 			{
-				if (a == "ptt" || a == "pantt" || a == "pandtt" || a == "pandoratt" || a == "pand" || a == "pandora" || (Utils.IsPandora() && (a == "cov" || a == "coven" || a == "ctt" || a == "covtt" | a == "coventt" || a == "att" || a == "apoctt" || a == "apocalypsett" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")))
-				{
-					return (FactionType)43;
-				}
-				if (a == "rec" || a == "recruit" || a == "recruited" || a == "recd")
-				{
-					return (FactionType)33;
-				}
-				if (a == "ego" || a == "egotown" || a == "egotownie" || a == "egoist" || a == "egotist")
-				{
-					return (FactionType)42;
-				}
-				if (a == "comp" || a == "comk" || a == "compliance" || a == "compliant" || a == "comkiller" || a == "compkiller" || (Utils.IsCompliance() && (a == "sk" || a == "arso" || a == "arsonist" || a == "ww" || a == "werewolf" || a == "shroud")))
-				{
-					return (FactionType)44;
-				}
+				if (Utils.IsPandora() && (theFaction == FactionType.COVEN || theFaction == FactionType.APOCALYPSE))
+					theFaction = Btos2Faction.Pandora;
+				if (Utils.IsCompliance() && theFaction >= FactionType.SERIALKILLER && theFaction <= FactionType.SHROUD)
+					theFaction = Btos2Faction.Compliance;
 			}
-			if (a == "traitor" || a == "tt")
-			{
-				if (Utils.IsPandora())
-				{
-					return (FactionType)43;
-				}
-				if (Utils.IsCTT())
-				{
-					return FactionType.COVEN;
-				}
-				if (Utils.IsATT())
-				{
-					return FactionType.APOCALYPSE;
-				}
-				return FactionType.COVEN;
-			}
-			else
-			{
-				if (a == "town" || a == "townie")
-				{
-					return FactionType.TOWN;
-				}
-				if (a == "cov" || a == "coven" || a == "ctt" || a == "covtt" | a == "coventt")
-				{
-					return FactionType.COVEN;
-				}
-				if (a == "sk")
-				{
-					return FactionType.SERIALKILLER;
-				}
-				if (a == "arso" || a == "arsonist")
-				{
-					return FactionType.ARSONIST;
-				}
-				if (a == "ww" || a == "werewolf")
-				{
-					return FactionType.WEREWOLF;
-				}
-				if (a == "shroud")
-				{
-					return FactionType.SHROUD;
-				}
-				if (a == "exe" || a == "executioner")
-				{
-					return FactionType.EXECUTIONER;
-				}
-				if (a == "jest" || a == "jester")
-				{
-					return FactionType.JESTER;
-				}
-				if (a == "cs")
-				{
-					return FactionType.CURSED_SOUL;
-				}
-				if (a == "att" || a == "apoctt" || a == "apocalypsett" || a == "apoc" || a == "apocalypse" || a == "horseman" || a == "horsemen")
-				{
-					return FactionType.APOCALYPSE;
-				}
-				if (a == "vamp" || a == "vampire" || a == "vampd" || a == "vampired" || a == "bit" || a == "bitten" || a == "converted" || a == "convert" || a == "conv")
-				{
-					return FactionType.VAMPIRE;
-				}
-				return FactionType.NONE;
-			}
+			return theFaction;
 		}
 
 		// Token: 0x06000023 RID: 35
@@ -949,29 +711,423 @@ namespace NotesPlus
 				"</color>"
 			});
 		}
-
-		// Token: 0x04000003 RID: 3
-		public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
+		public static List<string> GetAbbreviationListOfRoleTuple(Role vanillaRole, Role btosRole)
+		{
+            foreach (KeyValuePair<Tuple<Role, Role>, List<string>> kvp in AlignmentAbbreviationStrings)
+				if (kvp.Key.Item1 == vanillaRole && kvp.Key.Item2 == btosRole)
+					return kvp.Value;
+            return new List<string>();
+		}
+        public static List<string> GetAbbreviationListOfRole(Role role, bool isBtos)
+        {
+            foreach (KeyValuePair<Tuple<Role, Role>, List<string>> kvp in AlignmentAbbreviationStrings)
+                if (!isBtos && kvp.Key.Item1 == role || isBtos && kvp.Key.Item2 == role)
+                    return kvp.Value;
+            return new List<string>();
+        }
+		public static Tuple<Role, Role> GetRoleTupleOfAbbreviationList(List<string> abbreviationList)
+		{
+            foreach (KeyValuePair<Tuple<Role, Role>, List<string>> kvp in AlignmentAbbreviationStrings)
+                if (kvp.Value == abbreviationList)
+                    return kvp.Key;
+            return new Tuple<Role, Role>(Role.UNKNOWN, Role.UNKNOWN);
+        }
+        public static Role GetRoleOfAbbreviationList(List<string> abbreviationList, bool isBtos)
+        {
+            foreach (KeyValuePair<Tuple<Role, Role>, List<string>> kvp in AlignmentAbbreviationStrings)
+                if (kvp.Value == abbreviationList)
+                    return isBtos ? kvp.Key.Item2 : kvp.Key.Item1;
+            return Role.UNKNOWN;
+        }
+        static DoYourThing()
+        {
+            string alignments = "(";
+            bool firstDone = false;
+            foreach (KeyValuePair<Tuple<Role, Role>, List<string>> kvp in AlignmentAbbreviationStrings)
+                foreach (string alignment in kvp.Value)
+                {
+                    if (!firstDone)
+                    {
+                        firstDone = true;
+                        alignments += alignment;
+                        continue;
+                    }
+                    alignments += "|" + alignment;
+                }
+            alignments += ")";
+            DoYourThing.AlignmentRegex = new Regex("(?<=^|\\s|\\*)" + alignments + "(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+            string factions = "(";
+			firstDone = false;
+            foreach (KeyValuePair<FactionType, List<string>> kvp in TraitorAbbreviationStrings)
+                foreach (string faction in kvp.Value)
+                {
+                    if (!firstDone)
+                    {
+                        firstDone = true;
+                        factions += faction;
+                        continue;
+                    }
+                    factions += "|" + faction;
+                }
+            factions += ")";
+            DoYourThing.TraitorRegex = new Regex("(?<=^|\\s|\\*)" + factions + "(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+        }
+        // Token: 0x04000003 RID: 3
+        public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
 
 		public static Dictionary<int, BMG_Button> lockButtons;
 
-		// Token: 0x04000004 RID: 4
-		public static Regex RoleRegex = new Regex("\\[\\[#\\d+]]|\\[\\[#\\d+,\\d+]]|<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
+        // Token: 0x04000004 RID: 4
+        public static Regex RoleRegex = new Regex("\\[\\[#\\d+]]|\\[\\[#\\d+,\\d+]]|<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
 
 		// Token: 0x04000005 RID: 5
-		public static Regex RoleIdRegex;
+		public static Regex RoleIdRegex = new Regex("\\d+");
 
 		// Token: 0x04000006 RID: 6
-		public static Regex FactionIdRegex;
+		public static Regex FactionIdRegex = new Regex("(?<=,)\\d+");
 
+		public static Dictionary<Tuple<Role, Role>, List<string>> AlignmentAbbreviationStrings = new Dictionary<Tuple<Role, Role>, List<string>>()
+		{
+			{
+				Tuple.Create(Role.TOWN_INVESTIGATIVE, Btos2Role.TownInvestigative),
+				new List<string>()
+				{
+					"ti"
+				}
+			},
+            {
+                Tuple.Create(Role.TOWN_PROTECTIVE, Btos2Role.TownProtective),
+                new List<string>()
+                {
+                    "tp"
+                }
+            },
+            {
+                Tuple.Create(Role.TOWN_SUPPORT, Btos2Role.TownSupport),
+                new List<string>()
+                {
+                    "ts"
+                }
+            },
+            {
+                Tuple.Create(Role.TOWN_KILLING, Btos2Role.TownKilling),
+                new List<string>()
+                {
+                    "tk"
+                }
+            },
+            {
+                Tuple.Create(Role.TOWN_POWER, Btos2Role.Unknown),
+                new List<string>()
+                {
+                    "tpow", "tpower"
+                }
+            },
+            {
+                Tuple.Create(Role.UNKNOWN, Btos2Role.TownGovernment),
+                new List<string>()
+                {
+                    "tg", "tgov"
+                }
+            },
+            {
+                Tuple.Create(Role.UNKNOWN, Btos2Role.TownExecutive),
+                new List<string>()
+                {
+                    "te", "texe"
+                }
+            },
+            {
+                Tuple.Create(Role.COVEN_KILLING, Btos2Role.CovenKilling),
+                new List<string>()
+                {
+                    "ck"
+                }
+            },
+            {
+                Tuple.Create(Role.COVEN_POWER, Btos2Role.CovenPower),
+                new List<string>()
+                {
+                    "cp", "cpow", "cpower"
+                }
+            },
+            {
+                Tuple.Create(Role.COVEN_DECEPTION, Btos2Role.CovenDeception),
+                new List<string>()
+                {
+                    "cd"
+                }
+            },
+            {
+                Tuple.Create(Role.COVEN_UTILITY, Btos2Role.CovenUtility),
+                new List<string>()
+                {
+                    "cu"
+                }
+            },
+            {
+                Tuple.Create(Role.NEUTRAL_EVIL, Btos2Role.NeutralEvil),
+                new List<string>()
+                {
+                    "ne"
+                }
+            },
+            {
+                Tuple.Create(Role.NEUTRAL_KILLING, Btos2Role.NeutralKilling),
+                new List<string>()
+                {
+                    "nk"
+                }
+            },
+            {
+                Tuple.Create(Role.NEUTRAL_APOCALYPSE, Btos2Role.RandomApocalypse),
+                new List<string>()
+                {
+                    "na", "ra", "apoc", "apocalypse", "horseman", "horsemen"
+                }
+            },
+            {
+                Tuple.Create(Role.RANDOM_TOWN, Btos2Role.RandomTown),
+                new List<string>()
+                {
+                    "rt", "town", "townie"
+                }
+            },
+            {
+                Tuple.Create(Role.COMMON_TOWN, Btos2Role.CommonTown),
+                new List<string>()
+                {
+                    "ct"
+                }
+            },
+            {
+                Tuple.Create(Role.RANDOM_COVEN, Btos2Role.RandomCoven),
+                new List<string>()
+                {
+                    "rc", "cov", "coven"
+                }
+            },
+            {
+                Tuple.Create(Role.RANDOM_NEUTRAL, Btos2Role.RandomNeutral),
+                new List<string>()
+                {
+                    "rn", "neut", "neutral"
+                }
+            },
+            {
+                Tuple.Create(Role.UNKNOWN, Btos2Role.NeutralPariah),
+                new List<string>()
+                {
+                    "np", "pariah"
+                }
+            },
+            {
+                Tuple.Create(Role.UNKNOWN, Btos2Role.NeutralOutlier),
+                new List<string>()
+                {
+                    "no", "nout", "ns", "nspec"
+                }
+            },
+        };
+
+		public static Dictionary<FactionType, List<string>> TraitorAbbreviationStrings = new Dictionary<FactionType, List<string>>()
+		{
+			{
+				FactionType.TOWN,
+				new List<string>()
+				{
+					"town", "townie"
+				}
+			},
+            {
+                FactionType.COVEN,
+                new List<string>()
+                {
+                    "cov", "coven", "ctt", "covtt", "coventt"
+                }
+            },
+            {
+                FactionType.SERIALKILLER,
+                new List<string>()
+                {
+                    "sk"
+                }
+            },
+            {
+                FactionType.ARSONIST,
+                new List<string>()
+                {
+                    "arso", "arsonist"
+                }
+            },
+            {
+                FactionType.WEREWOLF,
+                new List<string>()
+                {
+                    "ww", "werewolf"
+                }
+            },
+            {
+                FactionType.SHROUD,
+                new List<string>()
+                {
+                    "shroud"
+                }
+            },
+            {
+                FactionType.APOCALYPSE,
+                new List<string>()
+                {
+                    "apoc", "apocalypse", "horseman", "horsemen", "att", "apoctt", "apocalypsett"
+                }
+            },
+            {
+                FactionType.EXECUTIONER,
+                new List<string>()
+                {
+                    "exe", "executioner"
+                }
+            },
+            {
+                FactionType.JESTER,
+                new List<string>()
+                {
+                    "jest", "jester"
+                }
+            },
+            {
+                FactionType.PIRATE,
+                new List<string>()
+                {
+                    "pirate"
+                }
+            },
+            {
+                FactionType.DOOMSAYER,
+                new List<string>()
+                {
+                    "doom", "doomsayer", "random", "randomass", "random ass"
+                }
+            },
+            {
+                FactionType.VAMPIRE,
+                new List<string>()
+                {
+                    "vamp", "vampire", "vampd", "vampired", "bit", "bitten", "conv", "convert", "converted"
+                }
+            },
+            {
+                FactionType.CURSED_SOUL,
+                new List<string>()
+                {
+                    "cs", "ws", "cursed", "wander", "wandering", "soul"
+                }
+            },
+            {
+                Btos2Faction.Jackal,
+                new List<string>()
+                {
+                    "rec", "recruit", "recd", "recruited"
+                }
+            },
+            {
+                Btos2Faction.Egotist,
+                new List<string>()
+                {
+                    "ego", "egoist", "egotist", "egotown", "egotownie"
+                }
+            },
+            {
+                Btos2Faction.Pandora,
+                new List<string>()
+                {
+                    "pan", "pand", "pandora", "ptt", "pantt", "pandtt", "pandoratt"
+                }
+            },
+            {
+                Btos2Faction.Compliance,
+                new List<string>()
+                {
+                    "comp", "compliant", "compliance", "comk", "comkiller", "compkiller"
+                }
+            },
+            {
+                FactionType.UNKNOWN,
+                new List<string>()
+                {
+                    "tt", "traitor"
+                }
+            },
+        };
+
+		public static Dictionary<List<string>, FactionType> AlignmentToFactionStrings = new Dictionary<List<string>, FactionType>()
+		{
+			{
+				GetAbbreviationListOfRoleTuple(Role.TOWN_INVESTIGATIVE, Btos2Role.TownInvestigative), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.TOWN_PROTECTIVE, Btos2Role.TownProtective), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.TOWN_SUPPORT, Btos2Role.TownSupport), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.TOWN_KILLING, Btos2Role.TownKilling), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.TOWN_POWER, Btos2Role.Unknown), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.UNKNOWN, Btos2Role.TownGovernment), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.UNKNOWN, Btos2Role.TownExecutive), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.RANDOM_TOWN, Btos2Role.RandomTown), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.COMMON_TOWN, Btos2Role.CommonTown), FactionType.TOWN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.COVEN_KILLING, Btos2Role.CovenKilling), FactionType.COVEN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.COVEN_DECEPTION, Btos2Role.CovenDeception), FactionType.COVEN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.COVEN_POWER, Btos2Role.CovenPower), FactionType.COVEN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.COVEN_UTILITY, Btos2Role.CovenUtility), FactionType.COVEN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.RANDOM_COVEN, Btos2Role.RandomCoven), FactionType.COVEN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.COMMON_COVEN, Btos2Role.CommonCoven), FactionType.COVEN
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.NEUTRAL_EVIL, Btos2Role.NeutralEvil), FactionType.NONE
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.NEUTRAL_KILLING, Btos2Role.NeutralKilling), FactionType.NONE
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.UNKNOWN, Btos2Role.NeutralPariah), FactionType.NONE
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.UNKNOWN, Btos2Role.NeutralOutlier), FactionType.NONE
+			},
+			{
+				GetAbbreviationListOfRoleTuple(Role.NEUTRAL_APOCALYPSE, Btos2Role.RandomApocalypse), FactionType.APOCALYPSE
+			},
+		};
 		// Token: 0x04000007 RID: 7
 		public static Regex AlignmentRegex;
 
-		// Token: 0x04000008 RID: 8
-		public static Regex AlignmentRegexBTOS;
-
-		// Token: 0x04000009 RID: 9
-		public static BMG_Button PlayerNotesSendToChat;
+        // Token: 0x04000009 RID: 9
+        public static BMG_Button PlayerNotesSendToChat;
 
 		public static BMG_Button PlayerNotesCopyToClipboard;
 
@@ -982,7 +1138,7 @@ namespace NotesPlus
 		public static NotepadPanel notepad;
 
 		// Token: 0x0400000C RID: 12
-		public static Regex PostChatRegex;
+		public static Regex PostChatRegex = new Regex("<style=Mention>(.*?<color=#......>.*?\\/style>)|<style=Mention>(.*?\\/style>)");
 
 		// Token: 0x0400000D RID: 13
 		public static Regex LinkRoleRegex = new Regex("<link=\"r\\d+\">|<link=\"r\\d+,\\d+\">");
@@ -991,10 +1147,10 @@ namespace NotesPlus
 		public static List<int> alreadydone;
 
 		// Token: 0x0400000F RID: 15
-		public static Regex TraitorRegex = new Regex("(?<=^|\\s|\\*)(town|townie|cov|coven|tt|traitor|ctt|covtt|coventt|sk|arso|arsonist|ww|werewolf|shroud|apoc|apocalypse|horseman|horsemen|att|apoctt|apocalypsett|exe|executioner|jest|jester|cs|pand|pandora|ptt|pantt|pandtt|pandoratt|recruit|recruited|rec|recd|egotist|egoist|ego|egotown|egotownie|vamp|vampire|vampd|vampired|bit|bitten|converted|convert|conv|comk|comp|compliance|compliant|comkiller|compkiller)(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+		public static Regex TraitorRegex;
 
 		// Token: 0x04000010 RID: 16
-		public static bool JANCanCode;
+		public static bool JANCanCode = false;
 
 		// Token: 0x04000011 RID: 17
 		public static Dictionary<int, Tuple<Role, FactionType>> lockedplayers;

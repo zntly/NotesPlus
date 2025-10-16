@@ -103,9 +103,13 @@ Below are all of the valid faction abbreviations, each one separated by a comma.
 
 <indent=7%><b>Jester:</b> JEST, JESTER</indent>
 
+<indent=7%><b>Pirate:</b> PIRATE</indent>
+
+<indent=7%><b>Doomsayer:</b> DOOM, DOOMSAYER, RANDOM, RANDOMASS, RANDOM ASS</indent>
+
 <indent=7%><b>Vampire:</b> VAMP, VAMPIRE, VAMPD, VAMPIRED, BIT, BITTEN, CONVERTED, CONVERT, CONV</indent>
 
-<indent=7%><b>Cursed Soul:</b> CS</indent>
+<indent=7%><b>Cursed Soul:</b> CS, WS, SOUL, CURSED, WANDER, WANDERING</indent>
 
 <indent=7%><b>Town Traitor:</b> TT, TRAITOR</indent>
 <indent=14%><size=60%>The faction for Town Traitor is dynamic depending on the rolelist.
@@ -118,7 +122,7 @@ If none of the above, it maps to the Coven faction.</size></indent>
 
 <indent=7%><b>Egotist Townie:</b> EGO, EGOTIST, EGOIST, EGOTOWN, EGOTOWNIE</indent>
 
-<indent=7%><b>Pandora:</b> PAND, PANDORA, PTT, PANTT, PANDTT, PANDORATT</indent>
+<indent=7%><b>Pandora:</b> PAN, PAND, PANDORA, PTT, PANTT, PANDTT, PANDORATT</indent>
 <indent=7%><size=50%>(+ All Coven/Apocalypse abbreviations if Pandora's Box is enabled)</size></indent>
 
 <indent=7%><b>Compliance:</b> COMP, COMK, COMPLIANT, COMPLIANCE, COMKILLER, COMPKILLER</indent>
