@@ -4,6 +4,8 @@
 
 <indent=7%><b>Faction Abbreviations:</b> Allows you to put common abbreviations for factions or traitors instead of manually doing a faction override. All abbreviations are in the <b>Faction Abbreviations</b> section.</indent>
 
+<indent=7%><b>Manual Locking/Unlocking:</b> Shows claimspace in the role list as roles get filled out by you or the game, by putting player numbers next to the roles.</indent>
+
 <indent=7%><b>Only Detect Marked:</b> This makes roles not show up on the right unless you mark it with an asterisk (*).</indent>
 
 <indent=7%><b>Show Faction Color:</b> Determines when a role shows the faction color or when it should just show white.</indent>

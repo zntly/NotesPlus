@@ -5,6 +5,6 @@
     "Synapsium"
   ],
   "Description": "Player Notes will now show claims you put into it next to their name",
-  "Version": "1.0.5",
+  "Version": "1.0.6",
   "RequiredMods": ["JAN.modpagelib"]
 }

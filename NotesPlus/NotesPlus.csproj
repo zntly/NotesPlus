@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BToSEquivalents.cs" />
+    <Compile Include="ClaimspaceVisualizer.cs" />
     <Compile Include="DoYourThing.cs" />
     <Compile Include="FilterByFactionFixer.cs" />
     <Compile Include="Main.cs" />

@@ -155,7 +155,9 @@ namespace NotesPlus
 		{
 			if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DAY)
 			{
-				DoYourThing.playerList = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players");
+				ClaimspaceVisualizer.ready = false;
+				ClaimspaceVisualizer.allRoleListItems = new List<RoleListItem>();
+                DoYourThing.playerList = GameObject.Find("Hud/AbilityMenuElementsUI(Clone)/MainCanvasGroup/MainPanel/TosAbilityMenu/PlayerList/Players");
 				DoYourThing.inputHolder = null;
 				DoYourThing.JANCanCode = false;
 				DoYourThing.alreadydone = new List<int>();
@@ -202,6 +204,8 @@ namespace NotesPlus
 		}
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)
 		{
+			if ((bool)Settings.SettingsCache.GetValue("Claimspace Visualizer"))
+				ClaimspaceVisualizer.SortRoles(data);
 			for (int i = 0; i < 15; i++)
 			{
 				try

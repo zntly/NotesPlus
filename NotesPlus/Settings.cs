@@ -122,6 +122,24 @@ namespace NotesPlus
 				};
 			}
 		}
+        public ModSettings.CheckboxSetting ClaimspaceVisualizer
+        {
+            get
+            {
+                return new ModSettings.CheckboxSetting
+                {
+                    Name = "Claimspace Visualizer",
+                    Description = "Shows claimspace in the role list as roles get filled out by you or the game, by putting player numbers next to the roles",
+                    DefaultValue = true,
+                    AvailableInGame = false,
+                    Available = true,
+                    OnChanged = delegate (bool s)
+                    {
+                        Settings.SettingsCache.SetValue("Claimspace Visualizer", s);
+                    }
+                };
+            }
+        }
         public ModSettings.CheckboxSetting LockUnlock
         {
             get
@@ -250,8 +268,12 @@ namespace NotesPlus
 				true
 			},
             {
-                "Manual Locking/Unlocking",
+                "Claimspace Visualizer",
                 true
+            },
+            {
+                "Manual Locking/Unlocking",
+                false
             },
             {
 				"Additional Notes Style",
