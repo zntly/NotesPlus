@@ -1,15 +1,10 @@
 ﻿using Game.Interface;
-using Game.Simulation;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using Server.Shared.State;
 using Server.Shared.Extensions;
-using UnityEngine;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.Tracing;
 using Home.Shared;
 
 namespace NotesPlus
