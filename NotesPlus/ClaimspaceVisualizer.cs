@@ -20,7 +20,9 @@ namespace NotesPlus
         [HarmonyPostfix]
         public static void Postfix(HudRoleListPanel __instance)
         {
-            if (allRoleListItems.Count == 0 && (bool)Settings.SettingsCache.GetValue("Claimspace Visualizer"))
+            if (!(bool)Settings.SettingsCache.GetValue("Claimspace Visualizer"))
+                return;
+            if (allRoleListItems.Count == 0)
             {
                 isBtos = Utils.IsBTOS2();
                 allRoleListItems = __instance.roleListItems;
@@ -78,6 +80,9 @@ namespace NotesPlus
                     categorizedRoleListItems.GetValue(Math.Max(role1Category, role2Category)).Add(roleListItem);
                 }
             }
+            else
+                foreach (RoleListItem roleListItem in allRoleListItems)
+                    roleListItem.RefreshLabel();
         }
 
         public static void SortRoles(Dictionary<int, Tuple<Role, FactionType>> data)
@@ -147,7 +152,7 @@ namespace NotesPlus
                     else
                         foreach (RoleListItem roleListItem in kvp.Value)
                         {
-                            if (!placed && kvp.Key == 1 && (roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1))
+                            if (!placed && kvp.Key == 1 && (roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1)))
                             {
                                 lowestFit = 1;
                                 List<Tuple<int, bool>> addedNumberList = addedNumbers.GetValue(roleListItem);
@@ -205,7 +210,7 @@ namespace NotesPlus
                             {
                                 RoleBucket roleBucket1 = roleListItem.role.GetRoleBucket();
                                 RoleBucket roleBucket2 = roleListItem.role2.GetRoleBucket();
-                                if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1))
+                                if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1))
                                 {
                                     lowestFit = kvp.Key;
                                     List<Tuple<int, bool>> addedNumberList = addedNumbers.GetValue(roleListItem);
@@ -233,7 +238,7 @@ namespace NotesPlus
                                                 queueForDeletion = tuple;
                                                 addedNumberList.Add(confirmedData);
                                                 break;
-                                            } 
+                                            }
                                             else if (tuple.Item1 == i)
                                             {
                                                 queueForDeletion = tuple;
@@ -246,7 +251,7 @@ namespace NotesPlus
                                                 break;
                                             }
                                         if (queueForDeletion != null)
-                                                addedNumberList.Remove(queueForDeletion);
+                                            addedNumberList.Remove(queueForDeletion);
                                     }
                                 }
                             }
@@ -259,7 +264,7 @@ namespace NotesPlus
                     {
                         RoleBucket roleBucket1 = roleListItem.role.GetRoleBucket();
                         RoleBucket roleBucket2 = roleListItem.role2.GetRoleBucket();
-                        if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1))
+                        if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1))
                         {
                             placed = true;
                             endCategory = lowestFit;
@@ -268,30 +273,51 @@ namespace NotesPlus
                         }
                     }
                 }
+                List<Tuple<int, bool>> theQueueForDeletion = new List<Tuple<int, bool>>();
                 bool foundOne = false;
                 foreach (KeyValuePair<int, List<RoleListItem>> kvp in categorizedRoleListItems)
                     foreach (RoleListItem roleListItem in kvp.Value)
                     {
                         List<Tuple<int, bool>> addedNumberList = addedNumbers.GetValue(roleListItem);
-                        Tuple<int, bool> queueForDeletion = null;
                         foreach (Tuple<int, bool> tuple in addedNumberList)
                             if (tuple.Item1 == i && tuple.Item2 != confirmedData.Item2)
-                                queueForDeletion = tuple;
+                                theQueueForDeletion.Add(tuple);
                             else if (tuple.Equals(confirmedData))
                             {
-                                if (foundOne)
-                                    queueForDeletion = tuple;
-                                foundOne = true;
+                                RoleBucket roleBucket1 = roleListItem.role.GetRoleBucket();
+                                RoleBucket roleBucket2 = roleListItem.role2.GetRoleBucket();
+                                if (foundOne || !(roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1)))
+                                    theQueueForDeletion.Add(tuple);
+                                else
+                                    foundOne = true;
                             }
-                        if (queueForDeletion != null)
-                            addedNumberList.Remove(queueForDeletion);
+                        if (theQueueForDeletion.Count > 0)
+                        {
+                            foreach (Tuple<int, bool> queuedForDeletion in theQueueForDeletion)
+                                addedNumberList.Remove(queuedForDeletion);
+                            theQueueForDeletion.Clear();
+                        }
                     }
             }
             ready = true;
             foreach (RoleListItem roleListItem in allRoleListItems)
                 roleListItem.RefreshLabel();
         }
-
+        public static bool IsHorsemanInAcolyte(Role role1, Role role2, Role horseman)
+        {
+            if (horseman == Role.PESTILENCE)
+                return role1 == Role.PLAGUEBEARER || role2 == Role.PLAGUEBEARER;
+            if (horseman == Role.FAMINE)
+                return role1 == Role.BAKER || role2 == Role.BAKER;
+            if (horseman == Role.WAR)
+                return role1 == Role.BERSERKER || role2 == Role.BERSERKER;
+            if (horseman == Role.DEATH)
+                if (isBtos)
+                    return role1 == Btos2Role.SoulCollector || role2 == Btos2Role.SoulCollector || role1 == Btos2Role.Warlock || role2 == Btos2Role.Warlock;
+                else
+                    return role1 == Role.SOULCOLLECTOR || role2 == Role.SOULCOLLECTOR;
+            return false;
+        }
         public static bool IsBucketInBucket(Role bucket1, Role bucket2)
         {
             if (!isBtos)
@@ -337,14 +363,14 @@ namespace NotesPlus
         [HarmonyPostfix]
         public static void Postfix(RoleListItem __instance)
         {
-            if (!ClaimspaceVisualizer.ready)
+            if (!ClaimspaceVisualizer.ready || HudRoleListPanel.instance == null || HudRoleListPanel.instance.panel == null || !HudRoleListPanel.instance.panel.activeSelf || HudRoleListPanel.instance.isShowingGameModifiers)
                 return;
             List<Tuple<int, bool>> addedNumberList = ClaimspaceVisualizer.addedNumbers.GetValue(__instance);
             string addText = "";
             if (addedNumberList.Count > 0)
             {
                 addText = " <size=80%>";
-                foreach (Tuple<int, bool> tuple in addedNumberList)
+                foreach (Tuple<int, bool> tuple in addedNumberList.OrderByDescending(tuple => tuple.Item2).ThenBy(tuple => tuple.Item1))
                 {
                     addText += $"<sprite=\"PlayerNumbers\" name=\"PlayerNumbers_{tuple.Item1 + 1}\" color=#{(tuple.Item2 ? "FFFFFF" : "606060")}>";
                 }

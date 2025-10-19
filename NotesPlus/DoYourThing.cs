@@ -882,6 +882,13 @@ namespace NotesPlus
                 }
             },
             {
+                Tuple.Create(Role.COMMON_COVEN, Btos2Role.CommonCoven),
+                new List<string>()
+                {
+                    "cc"
+                }
+            },
+            {
                 Tuple.Create(Role.RANDOM_NEUTRAL, Btos2Role.RandomNeutral),
                 new List<string>()
                 {
