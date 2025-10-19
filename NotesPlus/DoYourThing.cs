@@ -200,6 +200,7 @@ namespace NotesPlus
 					DoYourThing.SharedHandleNPlus();
                     DoYourThing.HandleInputFields();
                 }
+				ClaimspaceVisualizer.SortRoles(Service.Game.Sim.simulation.knownRolesAndFactions.Data);
 			}
 		}
 		public static void DetectChanges(Dictionary<int, Tuple<Role, FactionType>> data)

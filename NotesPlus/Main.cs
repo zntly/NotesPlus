@@ -44,6 +44,7 @@ namespace NotesPlus
 				Settings.SettingsCache.SetValue("Additional Notes Color", ModSettings.GetColor("Additional Notes Color", "synapsium.notes.plus"));
                 Settings.SettingsCache.SetValue("Manual Locking/Unlocking", ModSettings.GetBool("Manual Locking/Unlocking", "synapsium.notes.plus"));
                 Settings.SettingsCache.SetValue("Claimspace Visualizer", ModSettings.GetBool("Claimspace Visualizer", "synapsium.notes.plus"));
+                Settings.SettingsCache.SetValue("Shorten Role Names to Fit Numbers", ModSettings.GetBool("Shorten Role Names to Fit Numbers", "synapsium.notes.plus"));
             } catch
             {
 				Console.WriteLine("damn your plague is so strong you gave the mod a bug, contact synapsium");

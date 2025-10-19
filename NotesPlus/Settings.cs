@@ -140,6 +140,24 @@ namespace NotesPlus
                 };
             }
         }
+        public ModSettings.CheckboxSetting ShortenRoleName
+        {
+            get
+            {
+                return new ModSettings.CheckboxSetting
+                {
+                    Name = "Shorten Role Names to Fit Numbers",
+                    Description = "Shorten the names of roles/buckets in the role list when there are a lot of numbers to make it easier to read",
+                    DefaultValue = true,
+                    AvailableInGame = false,
+                    Available = (bool)Settings.SettingsCache.GetValue("Claimspace Visualizer"),
+                    OnChanged = delegate (bool s)
+                    {
+                        Settings.SettingsCache.SetValue("Shorten Role Names to Fit Numbers", s);
+                    }
+                };
+            }
+        }
         public ModSettings.CheckboxSetting LockUnlock
         {
             get
@@ -270,6 +288,10 @@ namespace NotesPlus
             {
                 "Claimspace Visualizer",
                 true
+            },
+			{
+                "Shorten Role Names to Fit Numbers",
+				true
             },
             {
                 "Manual Locking/Unlocking",

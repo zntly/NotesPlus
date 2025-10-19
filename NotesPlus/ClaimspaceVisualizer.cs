@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics.Tracing;
+using Home.Shared;
 
 namespace NotesPlus
 {
@@ -87,8 +88,6 @@ namespace NotesPlus
             bool goToReplacements = false;
             for (int i = 0; i < 16; i++)
             {
-                Debug.LogWarning(i);
-                Debug.Log("NEW ---------------");
                 if (i == 15 && markedForReplacement.Count > 0)
                 {
                     goToReplacements = true;
@@ -99,8 +98,6 @@ namespace NotesPlus
                 if (goToReplacements)
                     markedForReplacement.Remove(i);
                 bool isKnown = data.ContainsKey(i);
-                Debug.LogWarning(isKnown);
-                Debug.Log("IS KNOWN ------------");
                 if (!isKnown)
                 {
                     Tuple<List<Tuple<int, bool>>, Tuple<int, bool>> queueForDeletion = null;
@@ -108,19 +105,11 @@ namespace NotesPlus
                         foreach (Tuple<int, bool> tuple in kvp.Value)
                             if (tuple.Item1 == i)
                             {
-                                Debug.LogWarning(tuple);
-                                Debug.LogWarning(kvp.Value);
-                                Debug.Log("QUEUE FOR DELETION ---------------");
                                 queueForDeletion = Tuple.Create(kvp.Value, tuple);
                                 break;
                             }
                     if (queueForDeletion != null)
-                    {
-                        Debug.LogWarning(queueForDeletion.Item1);
-                        Debug.LogWarning(queueForDeletion.Item2);
-                        Debug.Log("REMOVING ---------------");
                         queueForDeletion.Item1.Remove(queueForDeletion.Item2);
-                    }
                     continue;
                 }
                 Tuple<Role, FactionType> roleFactionData = data.GetValue(i);
@@ -351,17 +340,22 @@ namespace NotesPlus
             if (!ClaimspaceVisualizer.ready)
                 return;
             List<Tuple<int, bool>> addedNumberList = ClaimspaceVisualizer.addedNumbers.GetValue(__instance);
-            string finalText = "";
+            string addText = "";
             if (addedNumberList.Count > 0)
             {
-                finalText = " <size=80%>";
+                addText = " <size=80%>";
                 foreach (Tuple<int, bool> tuple in addedNumberList)
                 {
-                    finalText += $"<sprite=\"PlayerNumbers\" name=\"PlayerNumbers_{tuple.Item1 + 1}\" color=#{(tuple.Item2 ? "FFFFFF" : "606060")}>";
+                    addText += $"<sprite=\"PlayerNumbers\" name=\"PlayerNumbers_{tuple.Item1 + 1}\" color=#{(tuple.Item2 ? "FFFFFF" : "606060")}>";
                 }
-                finalText += "</size>";
+                addText += "</size>";
             }
-            __instance.roleLabel.text += finalText;
+            string finalText;
+            if ((bool)Settings.SettingsCache.GetValue("Shorten Role Names to Fit Numbers") && addedNumberList.Count > 2 && __instance.role2 == Role.NONE)
+                finalText = __instance.role.GetTMPSprite() + __instance.role.ToColorizedShortenedDisplayString() + addText;
+            else
+                finalText = __instance.roleLabel.text + addText;
+            __instance.roleLabel.text = finalText;
         }
     }
 }
