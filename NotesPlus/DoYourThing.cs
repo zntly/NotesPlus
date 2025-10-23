@@ -47,6 +47,7 @@ namespace NotesPlus
 			{
 				ClaimspaceVisualizer.ready = false;
 				ClaimspaceVisualizer.allRoleListItems = new List<RoleListItem>();
+				ClaimspaceVisualizer.instance = null;
                 DoYourThing.playerList = null;
 				DoYourThing.inputHolder = null;
 				DoYourThing.notepad = null;

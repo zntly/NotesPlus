@@ -74,6 +74,7 @@ namespace NotesPlus
                     // Add list item to the least specific category possible
                     categorizedRoleListItems.GetValue(Math.Max(role1Category, role2Category)).Add(roleListItem);
                 }
+                instance = __instance;
             }
             else
                 foreach (RoleListItem roleListItem in allRoleListItems)
@@ -348,6 +349,7 @@ namespace NotesPlus
         public static List<RoleListItem> allRoleListItems = new List<RoleListItem>();
         public static Dictionary<int, List<RoleListItem>> categorizedRoleListItems;
         public static Dictionary<RoleListItem, List<Tuple<int, bool>>> addedNumbers;
+        public static HudRoleListPanel instance;
         public static bool isBtos = false;
         public static bool ready = false;
     }
@@ -358,7 +360,7 @@ namespace NotesPlus
         [HarmonyPostfix]
         public static void Postfix(RoleListItem __instance)
         {
-            if (!ClaimspaceVisualizer.ready || HudRoleListPanel.instance == null || HudRoleListPanel.instance.panel == null || !HudRoleListPanel.instance.panel.activeSelf || HudRoleListPanel.instance.isShowingGameModifiers)
+            if (!ClaimspaceVisualizer.ready || ClaimspaceVisualizer.instance == null || ClaimspaceVisualizer.instance.panel == null || !ClaimspaceVisualizer.instance.panel.activeSelf || ClaimspaceVisualizer.instance.isShowingGameModifiers)
                 return;
             List<Tuple<int, bool>> addedNumberList = ClaimspaceVisualizer.addedNumbers.GetValue(__instance);
             string addText = "";
