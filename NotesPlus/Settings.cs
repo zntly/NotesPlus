@@ -158,6 +158,24 @@ namespace NotesPlus
                 };
             }
         }
+        public ModSettings.CheckboxSetting AAVis
+        {
+            get
+            {
+                return new ModSettings.CheckboxSetting
+                {
+                    Name = "Disable Claimspace Visualizer in All Any",
+                    Description = "Disables the claimspace visualizer if the role list only has Any slots",
+                    DefaultValue = false,
+                    AvailableInGame = false,
+                    Available = (bool)Settings.SettingsCache.GetValue("Claimspace Visualizer"),
+                    OnChanged = delegate (bool s)
+                    {
+                        Settings.SettingsCache.SetValue("Disable Claimspace Visualizer in All Any", s);
+                    }
+                };
+            }
+        }
         public ModSettings.CheckboxSetting LockUnlock
         {
             get
@@ -292,6 +310,10 @@ namespace NotesPlus
 			{
                 "Shorten Role Names to Fit Numbers",
 				true
+            },
+			{
+                "Disable Claimspace Visualizer in All Any",
+				false
             },
             {
                 "Manual Locking/Unlocking",

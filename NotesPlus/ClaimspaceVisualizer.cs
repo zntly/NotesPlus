@@ -30,10 +30,13 @@ namespace NotesPlus
                     {4, new List<RoleListItem>()},
                     {5, new List<RoleListItem>()}
                 };
+                bool allAny = true;
                 foreach (RoleListItem roleListItem in allRoleListItems)
                 {
                     addedNumbers.Add(roleListItem, new List<Tuple<int, bool>>());
                     Role role1 = roleListItem.role;
+                    if (allAny && !isBtos && role1 != Role.ANY || isBtos && role1 != Btos2Role.Any)
+                        allAny = false;
                     Role role2 = roleListItem.role2;
                     int role1Category = 0;
                     int role2Category = 0;
@@ -74,7 +77,9 @@ namespace NotesPlus
                     // Add list item to the least specific category possible
                     categorizedRoleListItems.GetValue(Math.Max(role1Category, role2Category)).Add(roleListItem);
                 }
-                instance = __instance;
+                if (allAny && (bool)Settings.SettingsCache.GetValue("Disable Claimspace Visualizer in All Any"))
+                    return;
+                ClaimspaceVisualizer.instance = __instance;
             }
             else
                 foreach (RoleListItem roleListItem in allRoleListItems)
@@ -83,7 +88,7 @@ namespace NotesPlus
 
         public static void SortRoles(Dictionary<int, Tuple<Role, FactionType>> data)
         {
-            if (allRoleListItems.Count == 0)
+            if (allRoleListItems.Count == 0 || ClaimspaceVisualizer.instance == null)
                 return; // Ignore if there's no list items here
             List<int> markedForReplacement = new List<int>();
             bool goToReplacements = false;

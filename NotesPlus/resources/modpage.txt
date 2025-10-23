@@ -6,6 +6,7 @@
 
 <indent=7%><b>Claimspace Visualizer:</b> Shows claimspace in the role list as roles get filled out by you or the game, by putting player numbers next to the roles.</indent>
 <indent=12%><b>Shorten Role Names to Fit Numbers:</b> Shorten the names of roles/buckets in the role list when there are a lot of numbers to make it easier to read.</indent>
+<indent=12%><b>Disable Claimspace Visualizer in All Any:</b> Disables the claimspace visualizer if the role list only has Any slots, since it is literally useless in forms of AA.</indent>
 
 <indent=7%><b>Only Detect Marked:</b> This makes roles not show up on the right unless you mark it with an asterisk (*).</indent>
 
