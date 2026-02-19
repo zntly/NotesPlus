@@ -211,7 +211,7 @@ namespace NotesPlus
                             {
                                 RoleBucket roleBucket1 = roleListItem.role.GetRoleBucket();
                                 RoleBucket roleBucket2 = roleListItem.role2.GetRoleBucket();
-                                if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1))
+                                if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || IsTGTETPow(roleListItem.role, roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1))
                                 {
                                     lowestFit = kvp.Key;
                                     List<Tuple<int, bool>> addedNumberList = addedNumbers.GetValue(roleListItem);
@@ -265,7 +265,7 @@ namespace NotesPlus
                     {
                         RoleBucket roleBucket1 = roleListItem.role.GetRoleBucket();
                         RoleBucket roleBucket2 = roleListItem.role2.GetRoleBucket();
-                        if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1))
+                        if (roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || IsTGTETPow(roleListItem.role, roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1))
                         {
                             placed = true;
                             endCategory = lowestFit;
@@ -287,7 +287,7 @@ namespace NotesPlus
                             {
                                 RoleBucket roleBucket1 = roleListItem.role.GetRoleBucket();
                                 RoleBucket roleBucket2 = roleListItem.role2.GetRoleBucket();
-                                if (foundOne || !(roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1)))
+                                if (foundOne || !(roleBucket1.roles.Contains(roleFactionData.Item1) || roleBucket2.roles.Contains(roleFactionData.Item1) || roleListItem.role == roleFactionData.Item1 || roleListItem.role2 == roleFactionData.Item1 || IsBucketInBucket(roleListItem.role, roleFactionData.Item1) || IsBucketInBucket(roleListItem.role2, roleFactionData.Item1) || IsTGTETPow(roleListItem.role, roleListItem.role2, roleFactionData.Item1) || roleFactionData.Item1 > (Role)249 && IsHorsemanInAcolyte(roleListItem.role, roleListItem.role2, roleFactionData.Item1)))
                                     theQueueForDeletion.Add(tuple);
                                 else
                                     foundOne = true;
@@ -339,7 +339,7 @@ namespace NotesPlus
             else if (bucket1 == Btos2Role.CommonTown)
                 return bucket2 == Btos2Role.TownInvestigative || bucket2 == Btos2Role.TownProtective || bucket2 == Btos2Role.TownSupport || bucket2 == Btos2Role.TownKilling;
             else if (bucket1 == Btos2Role.RandomTown)
-                return bucket2 == Btos2Role.TownInvestigative || bucket2 == Btos2Role.TownProtective || bucket2 == Btos2Role.TownSupport || bucket2 == Btos2Role.TownKilling || bucket2 == Btos2Role.TownGovernment || bucket2 == Btos2Role.TownExecutive || bucket2 == Btos2Role.CommonTown;
+                return bucket2 == Btos2Role.TownInvestigative || bucket2 == Btos2Role.TownProtective || bucket2 == Btos2Role.TownSupport || bucket2 == Btos2Role.TownKilling || bucket2 == Btos2Role.TownGovernment || bucket2 == Btos2Role.TownExecutive || bucket2 == Btos2Role.TownPower || bucket2 == Btos2Role.CommonTown;
             else if (bucket1 == Btos2Role.CommonCoven)
                 return bucket2 == Btos2Role.CovenDeception || bucket2 == Btos2Role.CovenUtility;
             else if (bucket1 == Btos2Role.RandomCoven)
@@ -350,6 +350,7 @@ namespace NotesPlus
                 return bucket2.IsBucket();
             return false;
         }
+        public static bool IsTGTETPow(Role bucket1, Role bucket2, Role bucket3) => Utils.IsBTOS2() && bucket1 == Btos2Role.TownExecutive && bucket2 == Btos2Role.TownGovernment && bucket3 == Btos2Role.TownPower;
 
         public static List<RoleListItem> allRoleListItems = new List<RoleListItem>();
         public static Dictionary<int, List<RoleListItem>> categorizedRoleListItems;

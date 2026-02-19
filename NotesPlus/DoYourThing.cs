@@ -358,6 +358,8 @@ namespace NotesPlus
 						Tuple<Role, FactionType> tuple2 = DoYourThing.AlignmentToFaction(match4.Value);
 						Role item = tuple2.Item1;
 						FactionType factionType2 = FactionType.UNKNOWN;
+						if (item == Role.UNKNOWN)
+							return;
                         flag = true;
                         if ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Always" || ((string)Settings.SettingsCache.GetValue("Show Faction Color") == "Only Marked" && str.IndexOf('*') != -1))
 						{
@@ -771,7 +773,7 @@ namespace NotesPlus
                 }
             },
             {
-                Tuple.Create(Role.TOWN_POWER, Btos2Role.Unknown),
+                Tuple.Create(Role.TOWN_POWER, Btos2Role.TownPower),
                 new List<string>()
                 {
                     "tpow", "tpower"
@@ -1036,7 +1038,7 @@ namespace NotesPlus
 				GetAbbreviationListOfRoleTuple(Role.TOWN_KILLING, Btos2Role.TownKilling), FactionType.TOWN
 			},
 			{
-				GetAbbreviationListOfRoleTuple(Role.TOWN_POWER, Btos2Role.Unknown), FactionType.TOWN
+				GetAbbreviationListOfRoleTuple(Role.TOWN_POWER, Btos2Role.TownPower), FactionType.TOWN
 			},
 			{
 				GetAbbreviationListOfRoleTuple(Role.UNKNOWN, Btos2Role.TownGovernment), FactionType.TOWN

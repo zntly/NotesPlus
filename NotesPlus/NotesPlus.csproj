@@ -42,10 +42,10 @@
     <Reference Include="BetterTOS2">
       <HintPath>lib\BetterTOS2.dll</HintPath>
     </Reference>
-	<Reference Include="FancyUI">
+	<Reference Include="MiscRoleCustomisation">
       <HintPath>lib\MiscRoleCustomisation.dll</HintPath>
     </Reference>
-	<Reference Include="MiscRoleCustomisation">
+	<Reference Include="FancyUI">
       <HintPath>lib\FancyUI.dll</HintPath>
     </Reference>
 	<Reference Include="mscorlib">
@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BToSEquivalents.cs" />
+    <Compile Include="BToSReaddTPow.cs" />
     <Compile Include="ClaimspaceVisualizer.cs" />
     <Compile Include="DoYourThing.cs" />
     <Compile Include="FilterByFactionFixer.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="System\Runtime\CompilerServices\IgnoresAccessChecksToAttribute.cs" />
+    <Compile Include="BToSReaddTPowEnabler.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

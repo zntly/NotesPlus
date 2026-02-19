@@ -51,7 +51,7 @@ Below are all of the valid alignment abbreviations, each one separated by a comm
 <indent=7%><b>Town Support:</b> TS</indent>
 
 <indent=7%><b>Town Power:</b> TPOW, TPOWER</indent>
-<indent=7%><size=50%>(Town Power is Vanilla only)</size></indent>
+<indent=7%><size=50%>(Even though Town Power is only available in Vanilla, it can be used in BToS2, but keep in mind it won't have its icon in BToS2)</size></indent>
 
 <indent=7%><b>Town Killing:</b> TK</indent>
 

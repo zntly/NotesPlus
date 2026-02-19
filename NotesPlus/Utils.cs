@@ -1,11 +1,12 @@
-﻿using System;
-using BetterTOS2;
+﻿using BetterTOS2;
+using FancyUI;
+using HarmonyLib;
 using Home.Shared;
 using MiscRoleCustomisation;
-using FancyUI;
 using Server.Shared.State;
 using Services;
 using SML;
+using System;
 
 namespace NotesPlus
 {
@@ -86,5 +87,5 @@ namespace NotesPlus
 			}
 			return role.ToDisplayString();
 		}
-	}
+    }
 }

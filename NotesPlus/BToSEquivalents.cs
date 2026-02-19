@@ -144,6 +144,7 @@ namespace NotesPlus
         // Special part 2
         public const Role Hangman = Role.HANGMAN;
         public const Role Hidden = Role.HIDDEN;
+        public const Role TownPower = (Role)242;
         public const Role Famine = Role.FAMINE;
         public const Role War = Role.WAR;
         public const Role Pestilence = Role.PESTILENCE;

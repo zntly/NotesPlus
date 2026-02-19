@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HarmonyLib;
+using Server.Shared.Extensions;
 using SML;
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Server.Shared.Extensions;
+using UnityEngine;
 
 namespace NotesPlus
 {
@@ -52,7 +53,7 @@ namespace NotesPlus
 			}
 		}
 
-		public static Sprite copyToClipboard;
+        public static Sprite copyToClipboard;
 		public static Sprite locked;
 		public static Sprite unlocked;
 	}
