@@ -95,26 +95,51 @@ namespace NotesPlus
         }
 
         public static void DoYourThing()
-        {
-            normalObject = new ModdedRoleBucket();
-            ModdedRoleBucket roleBucket = normalObject as ModdedRoleBucket;
-            roleBucket.Role = Btos2Role.TownPower;
-            roleBucket.RoleAlignment = RoleAlignment.TOWN;
-            roleBucket.SubAlignment = SubAlignment.POWER;
-            roleBucket.Name = "Town Power";
-            roleBucket.RoleBucketIconPath = "RoleCard_None";
-            roleBucket.Roles = new List<Role>()
-            {
-                Btos2Role.Jailor, Btos2Role.Marshal, Btos2Role.Prosecutor, Btos2Role.Mayor, Btos2Role.Monarch, Btos2Role.Pacifist
-            };
-            string stringTableString = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? Service.Home.LocalizationService.GetLocalizedString("FANCY_BUCKETS_TOWN") + " " + Service.Home.LocalizationService.GetLocalizedString("FANCY_BUCKETS_POWER") : Service.Home.LocalizationService.GetLocalizedString("GUI_ROLENAME_105");
-            Service.Home.LocalizationService.stringTable_.Add("BTOS_ROLENAME_242", stringTableString);
-            Service.Home.LocalizationService.stringTable_.Add("BTOS_ROLEBUCKET_242", stringTableString);
-            Service.Home.LocalizationService.stringTable_.Add("Town Power", "[Player Notes+] Ignore this box, just close it.");
-            BToSReaddTPow.NewPostfix(typeof(ConfigureModData), nameof(ConfigureModData.InitRoleBuckets), nameof(BToSRoleBucketsPostfix));
-            BToSReaddTPow.NewPostfix(typeof(RoleSelectionPanel), nameof(RoleSelectionPanel.PopulateListItems), nameof(PopulateListItemsPostfix));
-            BToSReaddTPow.NewPrefix(typeof(ToSpriteConversion), nameof(ToSpriteConversion.ToSprite), nameof(ToSpritePrefix));
-        }
+		{
+			if (normalObject == null)
+			{
+				normalObject = new ModdedRoleBucket();
+				ModdedRoleBucket roleBucket = normalObject as ModdedRoleBucket;
+
+				roleBucket.Role = Btos2Role.TownPower;
+				roleBucket.RoleAlignment = RoleAlignment.TOWN;
+				roleBucket.SubAlignment = SubAlignment.POWER;
+				roleBucket.Name = "Town Power";
+				roleBucket.RoleBucketIconPath = "RoleCard_None";
+				roleBucket.Roles = new List<Role>()
+				{
+					Btos2Role.Jailor, Btos2Role.Marshal, Btos2Role.Prosecutor,
+					Btos2Role.Mayor, Btos2Role.Monarch, Btos2Role.Pacifist
+				};
+
+				string stringTableString = Service.Home.LocalizationService.GetLocalizedString("GUI_ROLENAME_105"); // 
+				string stringTableString2 = Service.Home.LocalizationService.GetLocalizedString("GUI_ROLE_LIST_BUCKET_TOWN_POWER"); // 
+
+				if (!Service.Home.LocalizationService.stringTable_.ContainsKey("BTOS_ROLENAME_242"))
+				{
+					Service.Home.LocalizationService.stringTable_.Add("BTOS_ROLENAME_242", stringTableString);
+					Service.Home.LocalizationService.stringTable_.Add("BTOS_ROLEBUCKET_242", stringTableString2);
+					Service.Home.LocalizationService.stringTable_.Add("Town Power", "[Player Notes+] Ignore this box, just close it.");
+				}
+			}
+
+			if (!added)
+			{
+				added = true;
+
+				BToSReaddTPow.NewPostfix(typeof(ConfigureModData),
+					nameof(ConfigureModData.InitRoleBuckets),
+					nameof(BToSRoleBucketsPostfix));
+
+				BToSReaddTPow.NewPostfix(typeof(RoleSelectionPanel),
+					nameof(RoleSelectionPanel.PopulateListItems),
+					nameof(PopulateListItemsPostfix));
+
+				BToSReaddTPow.NewPrefix(typeof(ToSpriteConversion),
+					nameof(ToSpriteConversion.ToSprite),
+					nameof(ToSpritePrefix));
+			}
+		}
         public static Harmony harmonyInstance = new Harmony("synapsium.notes.plus.additional");
         public static object normalObject;
         public static bool added = false;

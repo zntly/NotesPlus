@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Home.HomeScene;
+using Services;
 
 namespace NotesPlus
 {
@@ -9,17 +10,10 @@ namespace NotesPlus
         [HarmonyPostfix]
         public static void Postfix()
         {
-            if (!doIt)
+            if (Service.Game?.Roles != null)
             {
-                doIt = true;
-                if (Utils.BTOS2Exists())
-                    RunReadder();
+                BToSReaddTPow.DoYourThing();
             }
         }
-        private static void RunReadder()
-        {
-            BToSReaddTPow.DoYourThing();
-        }
-        public static bool doIt = false;
     }
 }
