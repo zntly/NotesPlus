@@ -1,10 +1,9 @@
 {
   "HarmonyId": "synapsium.notes.plus",
   "DisplayName": "Player Notes+",
-  "Authors": [
-    "Synapsium"
-  ],
+  "Authors": [ "Synapsium" ],
   "Description": "Player Notes will now show claims you put into it next to their name",
   "Version": "1.1.1",
-  "RequiredMods": ["JAN.modpagelib"]
+  "RequiredMods": ["JAN.modpagelib"],
+  "ConflictingMods": [ "det.rolecustomizationmod" ],
 }

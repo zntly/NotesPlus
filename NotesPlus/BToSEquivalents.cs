@@ -106,6 +106,9 @@ namespace NotesPlus
         public const Role NeutralOutlier = (Role)118;
         public const Role TownExecutive = (Role)119;
         public const Role TownGovernment = (Role)120;
+		
+		// fake
+        public const Role TownPower = (Role)242;
 
         // Modifiers
         public const Role Vip = Role.VIP;
@@ -144,7 +147,6 @@ namespace NotesPlus
         // Special part 2
         public const Role Hangman = Role.HANGMAN;
         public const Role Hidden = Role.HIDDEN;
-        public const Role TownPower = (Role)242;
         public const Role Famine = Role.FAMINE;
         public const Role War = Role.WAR;
         public const Role Pestilence = Role.PESTILENCE;
