@@ -3,7 +3,6 @@
   "DisplayName": "Player Notes+",
   "Authors": [ "Synapsium" ],
   "Description": "Player Notes will now show claims you put into it next to their name",
-  "Version": "1.1.1",
+  "Version": "1.1.2",
   "RequiredMods": ["JAN.modpagelib"],
-  "ConflictingMods": [ "det.rolecustomizationmod" ],
 }

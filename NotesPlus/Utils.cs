@@ -2,7 +2,7 @@
 using FancyUI;
 using HarmonyLib;
 using Home.Shared;
-// using MiscRoleCustomisation;
+using MiscRoleCustomisation;
 using Server.Shared.State;
 using Services;
 using SML;
@@ -65,26 +65,22 @@ namespace NotesPlus
 		}
 
 		// Token: 0x0600003F RID: 63
-		// public static string MRCString(Role role, FactionType factionType)
-		// {
-			// if (MiscRoleCustomisation.Main.FactionSpecificNames)
-			// {
-				// return MiscRoleCustomisation.Utils.ToRoleFactionDisplayString(role, factionType);
-			// }
-			// return role.ToDisplayString();
-		// }
+		public static string MRCString(Role role, FactionType factionType)
+		{
+			if (MiscRoleCustomisation.Main.FactionSpecificRoleNames)
+			{
+				return MiscRoleCustomisation.Utils.ToRoleFactionDisplayString(role, factionType);
+			}
+			return role.ToDisplayString();
+		}
 		public static string FancyUIString(Role role, FactionType factionType) => FancyUI.Utils.ToRoleFactionDisplayString(role, factionType);
 		// Token: 0x06000040 RID: 64
 		public static string RoleDisplayString(Role role, FactionType factionType)
 		{
             if (ModStates.IsEnabled("alchlcsystm.fancy.ui"))
-            {
                 return Utils.FancyUIString(role, factionType);
-            }
-            // if (ModStates.IsEnabled("det.rolecustomizationmod"))
-			// {
-				// return Utils.MRCString(role, factionType);
-			// }
+            if (ModStates.IsEnabled("det.rolecustomizationmod"))
+				return Utils.MRCString(role, factionType);
 			return role.ToDisplayString();
 		}
     }

@@ -200,13 +200,16 @@ namespace NotesPlus
                         DoYourThing.lockedplayers.SetValue(i, tuple);
 						try
 						{
-							BMG_Button lockButton = DoYourThing.lockButtons.GetValue(i);
-                            TooltipTrigger tooltip = lockButton.GetComponent<TooltipTrigger>();
-                            if (lockButton)
+							if ((bool)Settings.SettingsCache.GetValue("Manual Locking/Unlocking", false))
 							{
-                                lockButton.DoSpriteSwap(Main.locked);
-                                tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "$" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
-                            }
+								BMG_Button lockButton = DoYourThing.lockButtons.GetValue(i);
+								TooltipTrigger tooltip = lockButton.GetComponent<TooltipTrigger>();
+								if (lockButton)
+								{
+									lockButton.DoSpriteSwap(Main.locked);
+									tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "$" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
+								}
+							}
 							GameObject gameObject = DoYourThing.playerList.transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
 							{
