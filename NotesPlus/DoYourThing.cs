@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using BMG.UI;
+﻿using BMG.UI;
 using Game.Interface;
 using Game.Simulation;
 using HarmonyLib;
@@ -14,9 +11,15 @@ using Server.Shared.State;
 using Server.Shared.Utils;
 using Services;
 using SML;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using static TosGuideContent.GuideFactionRolesList;
 
 namespace NotesPlus
 {
@@ -55,6 +58,7 @@ namespace NotesPlus
                 DoYourThing.ourknown = new StateProperty<Dictionary<int, Tuple<Role, FactionType>>>(new Dictionary<int, Tuple<Role, FactionType>>());
 				DoYourThing.lockedplayers = new Dictionary<int, Tuple<Role, FactionType>>();
                 DoYourThing.lockButtons = new Dictionary<int, BMG_Button>();
+                SetKnownRolePatch.nonUnderlinedStrings = new Dictionary<int, string>();
             }
 			else if (gameInfo.gamePhase == GamePhase.PLAY && gameInfo.playPhase == PlayPhase.FIRST_DISCUSSION)
 			{
@@ -68,7 +72,7 @@ namespace NotesPlus
 				{
 					try
 					{
-						GameObject gameObject2 = DoYourThing.playerList.transform.GetChild(keyValuePair2.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						/*GameObject gameObject2 = DoYourThing.playerList.transform.GetChild(keyValuePair2.Key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 						if (gameObject2)
 						{
 							RectTransform component3 = gameObject2.GetComponent<RectTransform>();
@@ -76,7 +80,7 @@ namespace NotesPlus
                             float maxsize = multi == 1f ? 9999f : 150f;
                             float x = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(keyValuePair2.Value.Item1, keyValuePair2.Value.Item2) + ")").x * multi, maxsize);
 							component3.sizeDelta = new Vector2(x, 30f);
-						}
+						}*/
 					}
 					catch
 					{
@@ -133,6 +137,11 @@ namespace NotesPlus
                         {
                             DoYourThing.TheGoodStuff(str, i - 1);
                             DoYourThing.TheAdditionalStuff(str, i - 1);
+                            Tuple<Role, FactionType> tuple = DoYourThing.ourknown.Get().GetValue(i - 1);
+                            if (tuple != null)
+                            {
+                                SetKnownRolePatch.ActualFunction(DoYourThing.playerList.transform.GetChild(i).GetComponent<TosAbilityPanelListItem>(), tuple.Item1, tuple.Item2, true);
+                            }
                         }
                         input.onValueChanged.AddListener(new UnityAction<string>(DoingTheThing));
                         if ((bool)Settings.SettingsCache.GetValue("Manual Locking/Unlocking") && Pepper.GetMyPosition() != i - 1)
@@ -210,7 +219,7 @@ namespace NotesPlus
 									tooltip.NonLocalizedString = "Unlock Role (Currently locked to " + (tuple.Item2 != FactionType.NONE && tuple.Item2 != FactionType.UNKNOWN && tuple.Item2 != tuple.Item1.GetFaction() ? Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + "$" + tuple.Item2.ToDisplayString() : Utils.RoleDisplayString(tuple.Item1, tuple.Item2)) + ")";
 								}
 							}
-							GameObject gameObject = DoYourThing.playerList.transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+							/*GameObject gameObject = DoYourThing.playerList.transform.GetChild(i + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
@@ -218,7 +227,7 @@ namespace NotesPlus
 								float maxsize = multi == 1f ? 9999f : 150f;
 								float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(tuple.Item1, tuple.Item2) + ")").x * multi, maxsize);
 								component.sizeDelta = new Vector2(x, 30f);
-							}
+							}*/
 						}
 						catch
 						{
@@ -301,9 +310,9 @@ namespace NotesPlus
 								Match match3 = DoYourThing.TraitorRegex.Match(str);
 								if (match3.Success)
 								{
-									flag2 = true;
-									factionType = DoYourThing.TraitorFaction(match3.Value);
-								}
+                                    factionType = DoYourThing.TraitorFaction(match3.Value);
+                                    flag2 = factionType != FactionType.UNKNOWN;
+                                }
 							}
 							if (!flag2 && (string)Settings.SettingsCache.GetValue("Show Faction Color") != "Only On Override")
 							{
@@ -337,7 +346,7 @@ namespace NotesPlus
 						Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 						try
 						{
-							GameObject gameObject = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+							/*GameObject gameObject = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 							if (gameObject)
 							{
 								RectTransform component = gameObject.GetComponent<RectTransform>();
@@ -345,7 +354,7 @@ namespace NotesPlus
                                 float maxsize = multi == 1f ? 9999f : 150f;
                                 float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(role, factionType) + ")").x * multi, maxsize);
 								component.sizeDelta = new Vector2(x, 30f);
-							}
+							}*/
 						}
 						catch
 						{
@@ -376,9 +385,9 @@ namespace NotesPlus
 									{
 										if (matchCollection[i].Value != match4.Value)
 										{
-											flag4 = true;
 											factionType2 = DoYourThing.TraitorFaction(matchCollection[i].Value);
-											i = matchCollection.Count;
+                                            flag4 = factionType2 != FactionType.UNKNOWN;
+                                            i = factionType2 != FactionType.UNKNOWN ? matchCollection.Count : i;
 										}
 									}
 								}
@@ -400,7 +409,7 @@ namespace NotesPlus
 							Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 							try
 							{
-								GameObject gameObject2 = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+								/*GameObject gameObject2 = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 								if (gameObject2)
 								{
 									RectTransform component2 = gameObject2.GetComponent<RectTransform>();
@@ -408,7 +417,7 @@ namespace NotesPlus
                                     float maxsize = multi == 1f ? 9999f : 150f;
                                     float x2 = Mathf.Min(gameObject2.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(item, factionType2) + ")").x * multi, maxsize);
 									component2.sizeDelta = new Vector2(x2, 30f);
-								}
+								}*/
 							}
 							catch
 							{
@@ -454,11 +463,12 @@ namespace NotesPlus
 				}
 				if (!flag6 && (bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
 				{
-					Match match7 = DoYourThing.TraitorRegex.Match(str);
-					if (match7.Success)
-					{
-						factionType3 = DoYourThing.TraitorFaction(match7.Value);
-					}
+                    Match match7 = DoYourThing.TraitorRegex.Match(str);
+                    if (match7.Success)
+                    {
+						FactionType nFaction = DoYourThing.TraitorFaction(match7.Value);
+                        factionType3 = nFaction != FactionType.UNKNOWN ? nFaction : factionType3;
+                    }
 				}
 				bool flag7 = false;
 				if (Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null) == null || Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null).Item1 != item2 || Service.Game.Sim.simulation.knownRolesAndFactions.Get().GetValue(key, null).Item2 != factionType3)
@@ -472,7 +482,7 @@ namespace NotesPlus
 					Service.Game.Sim.simulation.knownRolesAndFactions.Broadcast();
 					try
 					{
-						GameObject gameObject3 = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
+						/*GameObject gameObject3 = DoYourThing.playerList.transform.GetChild(key + 1).Find("LayoutGroup").Find("PlayerRoleLabel").gameObject;
 						if (gameObject3)
 						{
 							RectTransform component3 = gameObject3.GetComponent<RectTransform>();
@@ -480,7 +490,7 @@ namespace NotesPlus
                             float maxsize = multi == 1f ? 9999f : 150f;
                             float x3 = Mathf.Min(gameObject3.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(item2, factionType3) + ")").x * multi, maxsize);
 							component3.sizeDelta = new Vector2(x3, 30f);
-						}
+						}*/
 					}
 					catch
 					{
@@ -610,10 +620,14 @@ namespace NotesPlus
 					theFaction = Btos2Faction.Pandora;
 				if (Utils.IsCompliance() && theFaction >= FactionType.SERIALKILLER && theFaction <= FactionType.SHROUD)
 					theFaction = Btos2Faction.Compliance;
+			} else
+			{
+				if (theFaction >= Btos2Faction.Jackal)
+					theFaction = FactionType.UNKNOWN;
 			}
 			return theFaction;
 		}
-		public static void DisableRoleLabel(int num)
+        public static void DisableRoleLabel(int num)
 		{
 			try
 			{
@@ -734,6 +748,7 @@ namespace NotesPlus
                 }
             factions += ")";
             DoYourThing.TraitorRegex = new Regex("(?<=^|\\s|\\*)" + factions + "(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
+            DoYourThing.TraitorRegexUnsure = new Regex("(?<=^|\\s|\\*)" + factions + "(?=$|\\s|\\*|\\?)", RegexOptions.IgnoreCase);
         }
         public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
 
@@ -1105,7 +1120,9 @@ namespace NotesPlus
 
 		public static Regex TraitorRegex;
 
-		public static Dictionary<int, Tuple<Role, FactionType>> lockedplayers;
+        public static Regex TraitorRegexUnsure;
+
+        public static Dictionary<int, Tuple<Role, FactionType>> lockedplayers;
 
 		public static Regex AdditionalNotesRegex = new Regex("(?<=(?<!\\[)\\[)[^\\[\\]]*(?=\\](?!\\]))");
 
@@ -1113,4 +1130,138 @@ namespace NotesPlus
 
 		public static GameObject inputHolder;
 	}
+
+	[HarmonyPatch(typeof(TosAbilityPanelListItem), "SetKnownRole")]
+	public class SetKnownRolePatch
+	{
+		[HarmonyPostfix]
+		public static void Postfix(TosAbilityPanelListItem __instance, Role role, FactionType faction)
+		{
+			if (DoYourThing.playerList != null)
+                ActualFunction(__instance, role, faction, false);
+        }
+		public static void ActualFunction(TosAbilityPanelListItem __instance, Role role, FactionType factionType, bool dontResize = false)
+		{
+			GameObject gameObject = __instance.playerRoleText.gameObject;
+            RectTransform component = gameObject.GetComponent<RectTransform>();
+			if (!dontResize)
+			{
+				float multi = ModStates.IsEnabled("alchlcsystm.fancy.ui") ? 1f : 0.34718204f;
+				float maxsize = multi == 1f ? 9999f : 150f;
+				float x = Mathf.Min(gameObject.GetComponent<TextMeshProUGUI>().GetPreferredValues("(" + Utils.RoleDisplayString(role, factionType) + ")").x * multi, maxsize);
+				component.sizeDelta = new Vector2(x, 30f);
+				SetKnownRolePatch.nonUnderlinedStrings.SetValue(__instance.characterPosition + 1, __instance.playerRoleText.text);
+			}
+			BMG_InputField input = DoYourThing.GetInput(__instance.characterPosition + 1);
+			try
+			{
+				if (input != null && (bool)Settings.SettingsCache.GetValue("Faction Abbreviations"))
+				{
+					string str = input.text;
+					MatchCollection match3 = DoYourThing.TraitorRegexUnsure.Matches(str);
+					if (match3.Count > 0)
+					{
+						List<FactionType> factions = new List<FactionType>();
+						foreach (Match match in match3)
+						{
+							FactionType faction = DoYourThing.TraitorFaction(match.Value);
+							if (faction == factionType || faction == FactionType.UNKNOWN)
+								continue;
+							foreach (char c in str.Substring(match.Index + match.Length))
+								if (c == '?')
+									factions.Add(faction);
+								else
+									break;
+						}
+						string curText = SetKnownRolePatch.nonUnderlinedStrings.GetValue(__instance.characterPosition + 1, null);
+						if (curText == null)
+						{
+							curText = __instance.playerRoleText.text;
+							SetKnownRolePatch.nonUnderlinedStrings.SetValue(__instance.characterPosition + 1, __instance.playerRoleText.text);
+                        }
+						if (factions.Count == 0)
+						{
+							__instance.playerRoleText.text = curText;
+							return;
+						}
+						List<string> underlines = new List<string>();
+						int totalCount = 0;
+						foreach (FactionType faction in factions)
+						{
+							string newUnderline = "<color=" + faction.GetFactionColor() + "><u></color>";
+							if (totalCount != 0)
+								newUnderline = "</u>" + newUnderline;
+							underlines.Add(newUnderline);
+							totalCount += newUnderline.Length;
+						}
+						List<int> lengths = DivideEvenly(("(" + Utils.RoleDisplayString(role, factionType) + ")").Length, factions.Count).ToList();
+						lengths[0] += 1;
+						lengths[lengths.Count - 1] -= 1;
+						if (underlines.Count > 0)
+						{;
+                            int richTag = 0;
+							int currentCount = 0;
+							int currentUnderline = 0;
+							int curLength = curText.Length;
+                            for (int i = 0; i < curLength + totalCount; i++)
+							{
+								if (i == 0)
+								{
+									curText = curText.Insert(0, underlines[0]);
+									i += underlines[0].Length;
+								}
+                                if (currentCount == lengths[currentUnderline] && underlines.Count - 1 > currentUnderline)
+                                {
+                                    currentUnderline++;
+                                    currentCount = 0;
+                                    curText = curText.Insert(i, underlines[currentUnderline]);
+                                    i += underlines[currentUnderline].Length;
+                                }
+                                char c = curText[i];
+								if (c == '<')
+									richTag += 1;
+								else if (c == '>')
+									richTag -= 1;
+								if (richTag == 0)
+									currentCount++;
+							}
+							curText += "</u>";
+						}
+						__instance.playerRoleText.text = curText;
+					}
+					else
+					{
+                        string curText = SetKnownRolePatch.nonUnderlinedStrings.GetValue(__instance.characterPosition + 1, null);
+                        if (curText == null)
+                        {
+                            curText = __instance.playerRoleText.text;
+                            SetKnownRolePatch.nonUnderlinedStrings.SetValue(__instance.characterPosition + 1, __instance.playerRoleText.text);
+                        }
+						__instance.playerRoleText.text = curText;
+                    }
+				}
+			} catch (Exception e)
+			{
+				Debug.LogWarning("AHH SOMETHING HAPPENEDa");
+				Debug.Log(e);
+			}
+        }
+        public static IEnumerable<int> DivideEvenly(int numerator, int denominator)
+        {
+            if (denominator <= 0)
+            {
+                yield break;
+            }
+
+            int rem;
+            int div = Math.DivRem(numerator, denominator, out rem);
+
+            for (int i = 0; i < denominator; i++)
+            {
+                yield return i < rem ? div + 1 : div;
+            }
+        }
+
+		public static Dictionary<int, string> nonUnderlinedStrings = new Dictionary<int, string>();
+    }
 }

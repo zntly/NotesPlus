@@ -34,6 +34,12 @@ You cannot change what role shows in the playerlist when the role is locked, but
 Using a manual override (use any role id, only faction id is checked) or with Faction Abbreviations, you can change the shown faction of a locked role.
 If the <b>Manual Locking/Unlocking</b> setting is enabled, a lock button will appear next to each player's name (except yours) that allows you to manually lock and unlock roles. This is not recommended as there is a possibility you overwrite important information (such as a PM reveal or your own teammates) with this, but the option <i>is there</i>.
 
+A player can be marked as <i>confirmed</i> by marking in their note an asterisk (*). This only has an effect depending on your settings.
+
+When using a faction abbreviation on a player (such as "cov"), you can add a question mark (?) at the end ("cov?") to mark that player as being <i>unsure</i> of that faction.
+Marking a player as unsure of a faction will underline their role with that faction's color, rather than fully making them appear as that faction. Marking a player as unsure of multiple factions will split the underline across multiple colors.
+Using this, you can quickly display more complex thoughts about a player (such as "this person is most probably coven, but it is possible for them to be town" -> "cov?? town?" -> Mostly purple underline, some green underline)
+
 This mod adds a Send to Chat and a Copy to Clipboard button to your Player Notes. They do exactly what you should expect them to do.
 
 <b>(Applies to BToS2 Only)</b>
