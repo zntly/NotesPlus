@@ -42,9 +42,6 @@
     <Reference Include="BetterTOS2">
       <HintPath>lib\BetterTOS2.dll</HintPath>
     </Reference>
-	<Reference Include="MiscRoleCustomisation">
-      <HintPath>lib\MiscRoleCustomisation.dll</HintPath>
-    </Reference>
 	<Reference Include="FancyUI">
       <HintPath>lib\FancyUI.dll</HintPath>
     </Reference>

@@ -748,7 +748,7 @@ namespace NotesPlus
                 }
             factions += ")";
             DoYourThing.TraitorRegex = new Regex("(?<=^|\\s|\\*)" + factions + "(?=$|\\s|\\*)", RegexOptions.IgnoreCase);
-            DoYourThing.TraitorRegexUnsure = new Regex("(?<=^|\\s|\\*)" + factions + "(?=$|\\s|\\*|\\?)", RegexOptions.IgnoreCase);
+            DoYourThing.TraitorRegexUnsure = new Regex("(?<=^|\\s|\\*|\\?)" + factions + "(?=$|\\s|\\*|\\?)", RegexOptions.IgnoreCase);
         }
         public static StateProperty<Dictionary<int, Tuple<Role, FactionType>>> ourknown;
 
@@ -1162,13 +1162,14 @@ namespace NotesPlus
 					if (match3.Count > 0)
 					{
 						List<FactionType> factions = new List<FactionType>();
-						foreach (Match match in match3)
+						int maxFactionLength = ("(" + Utils.RoleDisplayString(role, factionType) + ")").Length;
+                        foreach (Match match in match3)
 						{
 							FactionType faction = DoYourThing.TraitorFaction(match.Value);
-							if (faction == factionType || faction == FactionType.UNKNOWN)
+							if (faction == factionType || faction == FactionType.UNKNOWN || factions.Contains(faction))
 								continue;
 							foreach (char c in str.Substring(match.Index + match.Length))
-								if (c == '?')
+								if (c == '?' && factions.Count < maxFactionLength)
 									factions.Add(faction);
 								else
 									break;
@@ -1188,15 +1189,20 @@ namespace NotesPlus
 						int totalCount = 0;
 						foreach (FactionType faction in factions)
 						{
-							string newUnderline = "<color=" + faction.GetFactionColor() + "><u></color>";
+							string newUnderline = "<color=" + faction.FactionDisplayColor(role) + "><u></color>";
 							if (totalCount != 0)
 								newUnderline = "</u>" + newUnderline;
 							underlines.Add(newUnderline);
 							totalCount += newUnderline.Length;
 						}
-						List<int> lengths = DivideEvenly(("(" + Utils.RoleDisplayString(role, factionType) + ")").Length, factions.Count).ToList();
-						lengths[0] += 1;
+						List<int> lengths = DivideEvenly(maxFactionLength, factions.Count).ToList();
+						/*lengths[0] += 1;
 						lengths[lengths.Count - 1] -= 1;
+						if (ModStates.IsEnabled("alchlcsystm.fancy.ui"))
+						{
+                            lengths[0] += 1;
+                            lengths[lengths.Count - 1] -= 1;
+                        }*/
 						if (underlines.Count > 0)
 						{;
                             int richTag = 0;
@@ -1220,11 +1226,11 @@ namespace NotesPlus
                                 char c = curText[i];
 								if (c == '<')
 									richTag += 1;
-								else if (c == '>')
-									richTag -= 1;
 								if (richTag == 0)
 									currentCount++;
-							}
+                                if (c == '>')
+                                    richTag -= 1;
+                            }
 							curText += "</u>";
 						}
 						__instance.playerRoleText.text = curText;
